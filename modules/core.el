@@ -9,6 +9,7 @@
 
 
 
+(add-to-list 'exec-path (expand-file-name ".local/bin"  (getenv "HOME")))
 (add-to-list 'load-path (expand-file-name "modules/core" user-emacs-directory))
 
 (require 'prefixes)

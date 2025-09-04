@@ -32,7 +32,27 @@
    ("<leader> ln" . #'jinx-next)
    ("<leader> lp" . #'jinx-previous))
   :config
-  (setq jinx-languages "en_US, it_IT"))
+  (setopt jinx-languages "en_US,it_IT"))
+
+(use-package google-translate
+  :ensure t
+  :custom
+  (google-translate-translation-directions-alist
+        '(("it" . "en") ("en" . "it")))
+  (google-translate-default-source-language "it")
+  (google-translate-default-target-language "en")
+  (google-translate-translation-to-kill-ring t)
+  :bind
+  (("<leader> lt" . google-translate-at-point)
+   ("<leader> lT" . google-translate-at-point-reverse))
+  :init
+  (add-to-list 'display-buffer-alist
+	       '("\\*Google Translate\\*"
+		 (display-buffer-reuse-window
+		  display-buffer-below-selected)
+		 (dedicated . t)
+		 (window-height . fit-window-to-buffer)
+		 (body-function . (lambda (window) (select-window window))))))
 
 (use-package tempel
   :bind

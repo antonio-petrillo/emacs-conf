@@ -1,4 +1,5 @@
 ;; dired-setup.el --- Best file manager out there -*- lexical-binding: t; -*-
+;; Note: the change binding in dired + evil I should change the `evil-motion-state-map'
 
 (use-package dired
   :ensure nil

@@ -22,12 +22,14 @@
    ([remap load-theme] . #'consult-theme)
    ([remap project-switch-to-buffer] . #'consult-project-buffer)
    ([remap recentf-open-files] . #'consult-recent-file)
-   ([remap yank-pop] . #'consult-yank-pop)
+   ([remap evil-paste-pop] . #'consult-yank-pop) ;; shadowed by evil -_-
+   ([remap yank-pop] . #'consult-yank-pop) ;; shadowed by evil -_-
    ([remap imenu] . #'consult-imenu)
    ([remap locate] . #'consult-locate)
    ([remap goto-line] . #'consult-goto-line)
 
-   ("M-y" . #'yank-pop)
+   ("M-y" . #'evil-paste-pop)
+
    ("<leader> ht" . #'load-theme)
    ("<leader> hi" . #'consult-info)
    ("<leader> hm" . #'consult-man)

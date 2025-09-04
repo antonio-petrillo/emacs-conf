@@ -6,6 +6,11 @@
 ;;
 ;;; Code:
 
+;; Note:
+;; 'normal (kbd "\"")  select register
+;; 'insert (kbd "C-r") paste register:
+;;  - Hit "C-r" and then select register
+
 (use-package evil
   :hook (elpaca-after-init . evil-mode)
   :custom
@@ -24,11 +29,22 @@
         evil-toggle-key (kbd "C-q C-q C-z"))
 
   :config
+  (keymap-unset evil-normal-state-map "C-." 'remove)
+  (keymap-unset evil-normal-state-map "M-." 'remove)
+
   (evil-set-leader nil (kbd "M-SPC"))
   (evil-set-leader 'normal (kbd "SPC"))
 
   (evil-set-leader nil (kbd "<leader> m") t)
   (evil-set-leader 'normal (kbd "<leader> m") t)
+
+  (keymap-set nto--prefix-window (kbd "s") #'evil-window-split)
+  (keymap-set nto--prefix-window (kbd "v") #'evil-window-vsplit)
+  (keymap-set nto--prefix-window (kbd "c") #'evil-window-delete)
+  (keymap-set nto--prefix-window (kbd "h") #'evil-window-left)
+  (keymap-set nto--prefix-window (kbd "j") #'evil-window-down)
+  (keymap-set nto--prefix-window (kbd "k") #'evil-window-up)
+  (keymap-set nto--prefix-window (kbd "l") #'evil-window-right)
 
   (evil-define-key 'normal dired-mode-map
     (kbd "h") #'dired-up-directory
@@ -154,18 +170,40 @@
     (kbd "M-a")   #'evil-multiedit-match-and-next
     (kbd "M-A")   #'evil-multiedit-match-and-prev)
   (evil-define-key '(visual normal) 'global
+    (kbd "C-h")   #'nto--backward-kill-word
     (kbd "C-M-a") #'evil-multiedit-restore)
+  
+  (define-key iedit-mode-keymap (kbd "C-h") #'nto--backward-kill-word)
 
   (with-eval-after-load 'evil-mutliedit
+
     (evil-define-key 'multiedit 'global
       (kbd "M-a")   #'evil-multiedit-match-and-next
       (kbd "M-S-a") #'evil-multiedit-match-and-prev
       (kbd "RET")   #'evil-multiedit-toggle-or-restrict-region)
     (evil-define-key '(multiedit multiedit-insert) 'global
+      (kbd "C-h")   #'nto--backward-kill-word
       (kbd "C-n")   #'evil-multiedit-next
       (kbd "C-p")   #'evil-multiedit-prev))
 
   (evil-ex-define-cmd "ie[dit]" 'evil-multiedit-ex-match))
+
+(use-package multiple-cursors
+  :after evil
+  :config
+  (setq mc/list-file (expand-file-name "multiple-cursor-allowed-command" nto--cache))
+  :init
+  (evil-define-key '(normal visual) mc/keymap
+    "<escape>" #'mc/keyboard-quit
+    "<return>" #'mc/keyboard-quit)
+  (evil-define-key 'visual 'global
+    (kbd "gze") #'mc/edit-ends-of-lines
+    (kbd "gza") #'mc/edit-beginnings-of-lines
+    (kbd "gzr") #'mc/mark-all-in-region)
+  (evil-define-key '(normal visual) 'global
+    (kbd "gzl") #'mc/edit-lines
+    (kbd "gzq") #'mc/keyboard-quit
+    (kbd "gzu") #'mc/keyboard-quit))
 
 (use-package evil-goggles
   :after evil

@@ -68,11 +68,14 @@ The DWIM behaviour of this command is as follows:
   (scroll-margin 0)
   (scroll-preserve-screen-position t)
   (auto-window-vscroll nil)
+  (auto-revert-verbose nil)
   (mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
                              (mouse-wheel-scroll-amount-horizontal 2))
   :init
   (setq-default indent-tabs-mode nil
                 tab-width 4)
+
+  (auto-revert-mode)
 
   (setq completions-highlight-face nil)
 

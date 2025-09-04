@@ -62,7 +62,7 @@
   "SPC" #'execute-extended-command
   "M-SPC" #'execute-extended-command-for-buffer)
 
-(global-set-key (kbd "C-c C-c") #'nto--prefix)
+(global-set-key (kbd "s-e") #'nto--prefix)
 
 (provide 'prefixes)
 ;; `prefixes' ends here.
