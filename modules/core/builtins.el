@@ -93,7 +93,6 @@ The DWIM behaviour of this command is as follows:
   (load-theme 'modus-vivendi)
   (recentf-mode)
   :bind
-  ("<leader> tt" . #'toggle-truncate-lines)
   ("<leader> ie" . #'emoji-list)
   ("<leader> ii" . #'emoji-insert)
   ("<leader> id" . #'emoji-describe)
@@ -129,8 +128,9 @@ The DWIM behaviour of this command is as follows:
                         
 (use-package electric
   :ensure nil
-  :hook (prog-mode . electric-indent-local-mode)
+  :hook (prog-mode . electric-indent-mode)
   :config
+  (setq-default electric-indent-chars '(?\n ?\^?))
   (setq electric-pair-pairs '((?\{ . ?\})
                               (?\[ . ?\])
                               (?\( . ?\))

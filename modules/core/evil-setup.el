@@ -73,6 +73,7 @@
     (kbd "<leader> hK") #'describe-keymap
 
     (kbd "<leader> .") #'find-file
+    (kbd "<leader> ,") #'switch-to-buffer
     (kbd "<leader> fs") #'save-buffer
     (kbd "<leader> fr") #'recentf-open-files
 
@@ -87,6 +88,7 @@
     (kbd "<leader> C-SPC") #'execute-extended-command-for-buffer
 
     (kbd "<leader> tl") #'display-line-numbers-mode
+    (kbd "<leader> tt") #'toggle-truncate-lines
 
     (kbd "<leader> ws") #'evil-window-split
     (kbd "<leader> wv") #'evil-window-vsplit
