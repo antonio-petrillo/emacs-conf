@@ -3,6 +3,8 @@
 ;;
 ;;; Code:
 
+(require 'package)
+
 (add-to-list 'package-archives
              '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 
@@ -15,6 +17,10 @@
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
+
+(when (eq system-type 'windows-nt)
+  
+  (message "running on windows"))
 
 (use-package undo-tree
   :defer t
@@ -526,7 +532,7 @@ The DWIM behaviour of this command is as follows:
   :config
   (setq dired-subtree-use-backgrounds nil))
 
-(use-package trahsed
+(use-package trashed
   :ensure t
   :commands (trashed)
   :bind ("<leader> C-," . #'trashed)
@@ -667,9 +673,6 @@ The DWIM behaviour of this command is as follows:
         ("<localleader> r" . #'odin-run-project)
         ("<localleader> t" . #'odin-test-project)))
 
-(use-package elixir-ts-mode
-  :ensure t)
-
 (use-package elixir-mode
   :ensure t
   :bind
@@ -690,7 +693,7 @@ The DWIM behaviour of this command is as follows:
      (backward-char ,n)))
 
 (use-package aas
-  :ensuret t
+  :ensure t
   :hook
   ((org-mode . aas-activate-for-major-mode)
    (markdown-mode . aas-activate-for-major-mode)
@@ -793,8 +796,8 @@ The DWIM behaviour of this command is as follows:
 		 (window-height . fit-window-to-buffer)
 		 (body-function . (lambda (window) (select-window window))))))
 
-(let ((mono-spaced-font "Aporetic Serif Mono") ;; "Monospace" backup
-      (proportionately-spaced-font "Aporetic Sans")) ;; "Sans" backup
+(let ((mono-spaced-font "Iosevka") ;; "Monospace" backup
+      (proportionately-spaced-font "Roboto")) ;; "Sans" backup
 
   (set-face-attribute
    'default nil
@@ -815,9 +818,6 @@ The DWIM behaviour of this command is as follows:
   :ensure t)
 
 (use-package doric-themes
-  :ensure t)
-
-(use-package ef-themes
   :ensure t)
 
 (use-package tron-legacy-theme

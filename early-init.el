@@ -12,53 +12,53 @@
   (make-directory nto--cache t))
 
 (setq eshell-directory-name (file-name-concat nto--cache "eshell")
-      treesit-extra-load-path (file-name-concat nto--cache "tree-sitter"))
+      treesit-extra-load-path `(,(file-name-concat nto--cache "tree-sitter")))
 
-(use-package emacs
-  :ensure nil
-  :custom
-  (auto-revert-verbose nil)
-  (auto-save-list-file-prefix (file-name-concat nto--cache "auto-save-list/.saves-"))
-  (auto-save-default nil)
-  (auto-window-vscroll nil)
-  (bookmark-default-file (file-name-concat nto--cache "bookmarks"))
-  (column-number-mode t)
-  (create-lockfiles nil)
-  (custom-file (file-name-concat nto--cache "custom.el"))
-  (custom-safe-theme t)
-  (default-input-method "italian-postfix")
-  (delete-by-moving-to-trash t)
-  (delete-selection-mode 1)
-  (display-line-numbers-type 'relative)
-  (global-auto-revert-non-file-buffers t)
-  (hscroll-margin 2)
-  (hscroll-step 1)
-  (indent-tabs-mode nil)
-  (inhibit-startup-buffer-menu t)
-  (inhibit-startup-message t)
-  (inhibit-startup-screen t)
-  (ispell-dictionary "en_US,it_IT")
-  (package-user-dir (file-name-concat nto--cache "elpa"))
-  (project-list-file (file-name-concat nto--cache "projects"))
-  (make-backup-files nil)
-  (mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
-                             (mouse-wheel-scroll-amount-horizontal 2))
-  (org-directory (file-name-concat (getenv "HOME") "Documents" "Org"))
-  (pixel-scroll-precision-mode t)
-  (pixel-scroll-precision-use-momentum nil)
-  (recentf-save-file (file-name-concat nto--cache "recentf"))
-  (ring-bell-function 'ignore)
-  (scroll-conservatively  10)
-  (scroll-margin 0)
-  (scroll-preserve-screen-position t)
-  (tab-always-indent 'complete)
-  (tab-width 4)
-  (transient-history-file (file-name-concat nto--cache "transient/history.el"))
-  (treesit-font-lock-level 4)
-  (truncate-lines t)
-  (use-dialog-box nil)
-  (use-short-answer t)
-  (warning-minimum-level :emergency))
+(setq
+ auto-revert-verbose nil
+ auto-save-list-file-prefix (file-name-concat nto--cache "auto-save-list/.saves-")
+ auto-save-default nil
+ auto-window-vscroll nil
+ bookmark-default-file (file-name-concat nto--cache "bookmarks")
+ column-number-mode t
+ create-lockfiles nil
+ custom-file (file-name-concat nto--cache "custom.el")
+ custom-safe-theme t
+ default-input-method "italian-postfix"
+ delete-by-moving-to-trash t
+ delete-selection-mode 1
+ display-line-numbers-type 'relative
+ global-auto-revert-non-file-buffers t
+ hscroll-margin 2
+ hscroll-step 1
+ indent-tabs-mode nil
+ inhibit-startup-buffer-menu t
+ inhibit-startup-message t
+ inhibit-startup-screen t
+ ispell-dictionary "en_US,it_IT"
+ package-user-dir (file-name-concat nto--cache "elpa")
+ package-enable-at-startup t
+ project-list-file (file-name-concat nto--cache "projects")
+ make-backup-files nil
+ mouse-wheel-scroll-amount '(2 ((shift) . hscroll)
+                               (mouse-wheel-scroll-amount-horizontal 2))
+ org-directory (file-name-concat (getenv "HOME") "Documents" "Org")
+ pixel-scroll-precision-mode t
+ pixel-scroll-precision-use-momentum nil
+ read-answer-short t
+ recentf-save-file (file-name-concat nto--cache "recentf")
+ ring-bell-function 'ignore
+ scroll-conservatively  10
+ scroll-margin 0
+ scroll-preserve-screen-position t
+ tab-always-indent 'complete
+ tab-width 4
+ transient-history-file (file-name-concat nto--cache "transient/history.el")
+ treesit-font-lock-level 4
+ truncate-lines t
+ use-dialog-box nil
+ use-short-answer t
+ warning-minimum-level :emergency)
 
 (startup-redirect-eln-cache (file-name-concat nto--cache "eln-cache"))
 
