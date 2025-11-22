@@ -3,30 +3,57 @@
 ;;
 ;;; Code:
 
-(require 'package)
+(defvar elpaca-installer-version 0.11)
+(defvar elpaca-directory (expand-file-name "elpaca/" nto--cache))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                              :ref nil :depth 1 :inherit ignore
+                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                              :build (:not elpaca--activate-package)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (<= emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+        (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                  ,@(when-let* ((depth (plist-get order :depth)))
+                                                      (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                  ,(plist-get order :repo) ,repo))))
+                  ((zerop (call-process "git" nil buffer t "checkout"
+                                        (or (plist-get order :ref) "--"))))
+                  (emacs (concat invocation-directory invocation-name))
+                  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                        "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                  ((require 'elpaca))
+                  ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
 
-(add-to-list 'package-archives
-             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(elpaca elpaca-use-package
+        (elpaca-use-package-mode))
 
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/") t)
-
-(add-to-list 'package-archives
-             '("elpa" . "https://elpa.gnu.org/packages/") t)
-
-(package-initialize)
-(unless package-archive-contents
-  (package-refresh-contents))
-
-(when (eq system-type 'windows-nt)
-  
-  (message "running on windows"))
+(when (and (eq system-type 'windows-nt)
+	   (not (eq (pwd) "c:/Program Files/Emacs")))
+	   (cd (getenv "HOME")))
 
 (use-package undo-tree
   :defer t
   :ensure t
   :hook
-  (after-init . global-undo-tree-mode)
+  (elpaca-after-init-hook . global-undo-tree-mode)
   :init
   (setq undo-tree-visualizer-timestamps t
         undo-tree-visualizer-diff t
@@ -38,7 +65,7 @@
 
 (use-package evil
   :ensure t
-  :hook (after-init-hook . evil-mode)
+  :hook (elpaca-after-init-hook . evil-mode)
   :custom
   (evil-disable-insert-state-bindings t)
   :init
@@ -113,7 +140,8 @@
     (kbd "<leader> w0") #'delete-window
     (kbd "<leader> wo") #'other-window))
 
-(use-package evil-terminal-emulator-changer
+(use-package evil-terminal-cursor-changer
+  :if (not (eq system-type 'windows-nt))
   :ensure t
   :after evil
   :init
@@ -284,6 +312,8 @@ The DWIM behaviour of this command is as follows:
   (load-theme 'modus-vivendi)
   (recentf-mode)
   :bind
+  ("C-i" . #'dabbrev-completion)
+  ("C-S-i" . #'dabbrev-expand)
   ("<leader> ie" . #'emoji-list)
   ("<leader> ii" . #'emoji-insert)
   ("<leader> id" . #'emoji-describe)
@@ -298,7 +328,7 @@ The DWIM behaviour of this command is as follows:
 
 (use-package savehist
   :ensure nil
-  :hook (after-init-hook . savehist-mode)
+  :hook (elpaca-after-init-hook . savehist-mode)
   :config
   (setq savehist-file (expand-file-name "savehist" nto--cache)
         history-length 100
@@ -308,14 +338,14 @@ The DWIM behaviour of this command is as follows:
 
 (use-package winner
   :ensure nil
-  :hook (after-init-hook . winner-mode)
+  :hook (elpaca-after-init-hook . winner-mode)
   :bind
   (("<leader> wu" . #'winner-undo)
    ("<leader> wr" . #'winner-redo)))
 
 (use-package delsel
   :ensure nil
-  :hook (after-init-hook . delete-selection-mode))
+  :hook (elpaca-after-init-hook . delete-selection-mode))
                         
 (use-package electric
   :ensure nil
@@ -401,7 +431,7 @@ The DWIM behaviour of this command is as follows:
 
 (use-package vertico
   :ensure t
-  :hook (after-init-hook . vertico-mode)
+  :hook (elpaca-after-init-hook . vertico-mode)
   :config
   (setq vertico-scrool-margin 0
 	vertico-count 10
@@ -425,7 +455,7 @@ The DWIM behaviour of this command is as follows:
 
 (use-package marginalia
   :ensure t
-  :hook (after-init-hook . vertico-mode)
+  :hook (elpaca-after-init-hook . vertico-mode)
   :bind
   (:map minibuffer-local-map
 	("M-A" . #'marginalia-cycle)))
@@ -494,7 +524,6 @@ The DWIM behaviour of this command is as follows:
 (use-package better-jumper
   :ensure t
   :after evil
-  :hook (evil-mode . better-jumper-mode)
   :init
   (global-set-key [remap evil-jump-forward]  #'better-jumper-jump-forward)
   (global-set-key [remap evil-jump-backward] #'better-jumper-jump-backward)
@@ -662,10 +691,7 @@ The DWIM behaviour of this command is as follows:
   :ensure t)
 
 (use-package odin-mode
-  :ensure t
-  :defer t
-  :vc (odin-mode :url "https://git.sr.ht/~mgmarlow/odin-mode"
-                 :branch "main")
+  :ensure (:host sourcehut :repo "mgmarlow/odin-mode")
   :bind
   (:map odin-mode-map
         ("<localleader> c" . #'odin-build-project)
@@ -743,8 +769,7 @@ The DWIM behaviour of this command is as follows:
     ";Oa" "O(1)"))
 
 (use-package rotate-text
-  :ensure t
-  :vc (:url "https://github.com/debug-ito/rotate-text.el")
+  :ensure (:host github :repo "debug-ito/rotate-text.el")
   :after evil
   :config
   (evil-define-key 'normal 'global

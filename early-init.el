@@ -37,7 +37,7 @@
  inhibit-startup-screen t
  ispell-dictionary "en_US,it_IT"
  package-user-dir (file-name-concat nto--cache "elpa")
- package-enable-at-startup t
+ package-enable-at-startup nil
  project-list-file (file-name-concat nto--cache "projects")
  make-backup-files nil
  mouse-wheel-scroll-amount '(2 ((shift) . hscroll)
