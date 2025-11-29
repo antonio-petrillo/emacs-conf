@@ -536,7 +536,7 @@ The DWIM behaviour of this command is as follows:
   :after evil
   :commands (dired)
   :custom
-  (dired-listing-switches "-aghi -v --group--directories-first")
+  (dired-listing-switches "-aghi -v")
   (dired-recursive-copies 'always)
   (dired-recursive-deletes 'alwasy)
   (dired-mouse-drag-files t)
@@ -821,8 +821,18 @@ The DWIM behaviour of this command is as follows:
 		 (window-height . fit-window-to-buffer)
 		 (body-function . (lambda (window) (select-window window))))))
 
-(let ((mono-spaced-font "Iosevka") ;; "Monospace" backup
-      (proportionately-spaced-font "Roboto")) ;; "Sans" backup
+(let ((mono-spaced-font "Monospace")
+      (proportionately-spaced-font "Sans"))
+
+  ;; NOTE: add here defaults fonts for others os'
+  (pcase system-type
+    ('gnu/linux 
+     (progn
+       (setq mono-spaced-font "IosevkaTerm Nerd Font Mono"
+	     proportionately-spaced-font "Roboto Serif")))
+    ('windows-nt (progn
+		   (setq mono-spaced-font "Iosevka"
+			 proportionately-spaced-font "Roboto"))))
 
   (set-face-attribute
    'default nil
