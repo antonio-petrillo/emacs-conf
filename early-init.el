@@ -31,7 +31,6 @@
  global-auto-revert-non-file-buffers t
  hscroll-margin 2
  hscroll-step 1
- indent-tabs-mode nil
  inhibit-startup-buffer-menu t
  inhibit-startup-message t
  inhibit-startup-screen t
@@ -43,6 +42,7 @@
  mouse-wheel-scroll-amount '(2 ((shift) . hscroll)
                                (mouse-wheel-scroll-amount-horizontal 2))
  org-directory (file-name-concat (getenv "HOME") "Documents" "Org")
+ org-persist-directory temporary-file-directory
  pixel-scroll-precision-mode t
  pixel-scroll-precision-use-momentum nil
  read-answer-short t

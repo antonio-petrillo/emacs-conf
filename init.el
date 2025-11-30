@@ -312,8 +312,8 @@ The DWIM behaviour of this command is as follows:
   (load-theme 'modus-vivendi)
   (recentf-mode)
   :bind
-  ("C-i" . #'dabbrev-completion)
-  ("C-S-i" . #'dabbrev-expand)
+  ("C-S-i" . #'dabbrev-completion)
+  ("C-i" . #'dabbrev-expand)
   ("<leader> ie" . #'emoji-list)
   ("<leader> ii" . #'emoji-insert)
   ("<leader> id" . #'emoji-describe)
@@ -349,7 +349,8 @@ The DWIM behaviour of this command is as follows:
                         
 (use-package electric
   :ensure nil
-  :hook (prog-mode . electric-indent-mode)
+  :hook ((prog-mode . electric-indent-mode)
+	 (prog-mode . electric-pair-mode))
   :config
   (setq-default electric-indent-chars '(?\n ?\^?))
   (setq electric-pair-pairs '((?\{ . ?\})
@@ -680,31 +681,6 @@ The DWIM behaviour of this command is as follows:
       (?? aw-show-dispatch-help))
     "List of actions for `aw-dispatch-default'."))
 
-(use-package devdocs
-  :ensure t
-  :custom
-  (devdocs-data-dir (expand-file-name "devdocs" nto--cache))
-  :bind
-  (("<leader> hd" . #'devdocs-lookup)))
-
-(use-package go-mode
-  :ensure t)
-
-(use-package odin-mode
-  :ensure (:host sourcehut :repo "mgmarlow/odin-mode")
-  :bind
-  (:map odin-mode-map
-        ("<localleader> c" . #'odin-build-project)
-        ("<localleader> C" . #'odin-check-project)
-        ("<localleader> r" . #'odin-run-project)
-        ("<localleader> t" . #'odin-test-project)))
-
-(use-package elixir-mode
-  :ensure t
-  :bind
-  (:map elixir-mode-map
-        ("<localleader> f" . #'elixir-format)))
-
 (use-package dotenv-mode
   :defer t
   :ensure t)
@@ -789,6 +765,7 @@ The DWIM behaviour of this command is as follows:
 
 (use-package jinx
   :ensure t
+  :if (not (eq system-type 'windows-nt))
   :hook ((org-mode . jinx-mode)
          (markdown-mode . jinx-mode)
          (text-mode . jinx-mode))
@@ -869,3 +846,30 @@ The DWIM behaviour of this command is as follows:
 
 (use-package naysayer-theme
   :ensure t)
+
+(setq-default indent-tabs-mode nil)
+
+(use-package devdocs
+  :ensure t
+  :custom
+  (devdocs-data-dir (expand-file-name "devdocs" nto--cache))
+  :bind
+  (("<leader> hd" . #'devdocs-lookup)))
+
+(use-package go-mode
+  :ensure t)
+
+(use-package odin-mode
+  :ensure (:host sourcehut :repo "mgmarlow/odin-mode")
+  :bind
+  (:map odin-mode-map
+        ("<localleader> c" . #'odin-build-project)
+        ("<localleader> C" . #'odin-check-project)
+        ("<localleader> r" . #'odin-run-project)
+        ("<localleader> t" . #'odin-test-project)))
+
+(use-package elixir-mode
+  :ensure t
+  :bind
+  (:map elixir-mode-map
+        ("<localleader> f" . #'elixir-format)))
