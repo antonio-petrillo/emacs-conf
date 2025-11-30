@@ -856,6 +856,10 @@ The DWIM behaviour of this command is as follows:
   :bind
   (("<leader> hd" . #'devdocs-lookup)))
 
+(use-package magit
+  :ensure t
+  :if (not (eq system-type 'windows-nt)))
+
 (use-package go-mode
   :ensure t)
 
