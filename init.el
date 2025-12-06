@@ -309,7 +309,6 @@ The DWIM behaviour of this command is as follows:
                               (hs-minor-mode)
                               (setq-local display-line-numbers 'relative)))
 
-  (load-theme 'modus-vivendi)
   (recentf-mode)
   :bind
   ("C-S-i" . #'dabbrev-completion)
@@ -842,7 +841,9 @@ The DWIM behaviour of this command is as follows:
   :ensure t)
 
 (use-package gruber-darker-theme
-  :ensure t)
+  :ensure t
+  :init
+  (load-theme 'gruber-darker))
 
 (use-package naysayer-theme
   :ensure t)
@@ -855,6 +856,10 @@ The DWIM behaviour of this command is as follows:
   (devdocs-data-dir (expand-file-name "devdocs" nto--cache))
   :bind
   (("<leader> hd" . #'devdocs-lookup)))
+
+(use-package transient
+  :ensure t
+  :if (not (eq system-type 'windows-nt)))
 
 (use-package magit
   :ensure t
