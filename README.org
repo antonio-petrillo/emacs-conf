@@ -1,3 +1,7 @@
 #+title: Readme
 
 This config is meant to use as a really minimal emacs in the terminal.
+
+* To try
++ [[https://github.com/larstvei/Focus][Focus]], dim surround text
++ [[https://github.com/brett-lempereur/consult-xref-stack][consult-xref-stack]], C-i, C-o of evil

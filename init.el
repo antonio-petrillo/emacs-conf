@@ -73,6 +73,7 @@
         evil-want-C-i-jumpt t
         evil-want-C-u-scroll t
         evil-want-C-d-scroll t
+		evil-want-keybinding nil
         evil-want-Y-yank-to-eol t
         evil-split-window-below t
         evil-split-window-right t
@@ -113,13 +114,18 @@
     (kbd "<leader> ,") #'switch-to-buffer
     (kbd "<leader> fs") #'save-buffer
     (kbd "<leader> fr") #'recentf-open-files
+	(kbd "<leader> fd") #'delete-file
+    (kbd "<leader> fR") #'rename-file
 
     (kbd "<leader> bk") #'kill-current-buffer
     (kbd "<leader> bK") #'kill-buffer
     (kbd "<leader> br") #'revert-buffer
+	(kbd "<leader> bi") #'ibuffer
+	(kbd "<leader> bn") #'evil-buffer-new
 
     (kbd "<leader> bm") #'bookmark-set
     (kbd "<leader> bd") #'bookmark-delete
+	(kbd "<leader> bs") #'bookmark-save
 
     (kbd "<leader> SPC") #'execute-extended-command
     (kbd "<leader> M-SPC") #'execute-extended-command-for-buffer
@@ -139,6 +145,13 @@
     (kbd "<leader> wM") #'delete-other-windows
     (kbd "<leader> w0") #'delete-window
     (kbd "<leader> wo") #'other-window))
+
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :config
+  (evil-collection-init
+   '(dired eww magit term wdired)))
 
 (use-package evil-terminal-cursor-changer
   :if (not (eq system-type 'windows-nt))
@@ -177,6 +190,7 @@
 
 (use-package evil-snipe
   :ensure t
+  :after evil
   :commands evil-snipe-local-mode evil-snipe-override-local-mode
   :hook ((evil-mode . evil-snipe-override-mode)
          (evil-mode . evil-snipe-mode))
@@ -295,7 +309,33 @@ The DWIM behaviour of this command is as follows:
 (use-package emacs
   :ensure nil
   :after evil
+  :custom
+  (ibuffer-expert t)
+  (ibuffer-saved-filter-groups
+   '(("default"
+	  ("Programming" (predicate . (derived-mode-p 'prog-mode)))
+	  ("Org" (mode . org-mode))
+	  ("MD" (mode . markdown-mode))
+	  ("Dired" (mode . dired-mode)))))
+  (ibuffer-never-show-predicates
+      '(;; System buffers
+        "^\\*Messages\\*$"
+        "^\\*scratch\\*$"
+        "^\\*Completions\\*$"
+        "^\\*Help\\*$"
+        "^\\*Apropos\\*$"
+        "^\\*info\\*$"
+        "^\\*Async-native-compile-log\\*$"))
+  (ibuffer-formats
+   '((mark " " (name 60 -1 :left))))
+
+  (repeat-on-final-keystroke t)
+  (repeat-exit-timeout 3)
+  (repeat-exit-key "<escape>")
+  (repeat-keep-prefix nil)
+  (repeat-check-key t)
   :init
+  (add-hook 'ibuffer-mode-hook (lambda () (ibuffer-switch-to-saved-filter-groups "default")))
   (auto-revert-mode)
   (setq completions-highlight-face nil)
 
@@ -304,15 +344,16 @@ The DWIM behaviour of this command is as follows:
 
   (global-unset-key (kbd "C-z"))
 
+  (add-hook 'java-mode-hook 'subword-mode-hook)
   (add-hook 'prog-mode-hook (lambda ()
                               (display-line-numbers-mode 1)
-                              (hs-minor-mode)
+							  (toggle-truncate-lines 1)
                               (setq-local display-line-numbers 'relative)))
 
-  (recentf-mode)
+  (recentf-mode 1)
+  (repeat-mode 1)
   :bind
-  ("C-S-i" . #'dabbrev-completion)
-  ("C-i" . #'dabbrev-expand)
+  ("C-S-i" . #'dabbrev-expand)
   ("<leader> ie" . #'emoji-list)
   ("<leader> ii" . #'emoji-insert)
   ("<leader> id" . #'emoji-describe)
@@ -324,6 +365,20 @@ The DWIM behaviour of this command is as follows:
         ("<localleader> e" . #'eval-defun)
         ("<localleader> b" . #'eval-buffer)
         ("<localleader> r" . #'eval-region)))
+
+
+(use-package eldoc
+  :ensure nil
+  :defer t
+  :hook (prog-mode . eldoc-mode))
+
+(use-package hide-show
+  :ensure nil
+  :init
+  (setq hs-hide-comments t
+		hs-hide-initial-comment-block t
+		hs-isearch-open t)
+  :hook (prog-mode . hs-minor-mode))
 
 (use-package savehist
   :ensure nil
@@ -337,6 +392,8 @@ The DWIM behaviour of this command is as follows:
 
 (use-package winner
   :ensure nil
+  :custom
+  (winner-dont-bind-my-keys t)
   :hook (elpaca-after-init-hook . winner-mode)
   :bind
   (("<leader> wu" . #'winner-undo)
@@ -400,12 +457,15 @@ The DWIM behaviour of this command is as follows:
    ([remap goto-line] . #'consult-goto-line)
 
    ("M-y" . #'evil-paste-pop)
+   ("M-X" . #'consult-mode-command)
 
    ("<leader> ht" . #'load-theme)
    ("<leader> hi" . #'consult-info)
    ("<leader> hm" . #'consult-man)
 
    ("<leader> ss" . #'consult-line)
+   ("<leader> so" . #'consult-outline)
+   ("<leader> si" . #'consult-imenu)
    ("<leader> jc" . #'consult-line)
    ("<leader> jC" . #'goto-line)
    ("<leader> fg" . #'consult-ripgrep)
@@ -415,9 +475,14 @@ The DWIM behaviour of this command is as follows:
    ("<leader> RET" . #'bookmark-jump)
    ("<leader> bb" . #'switch-to-buffer)
 
+   ("<leader> xr" . #'consult-register)
+
    :map minibuffer-local-map
    ("M-s" . #'consult-history)
-   ("M-r" . #'consult-history)))
+   ("M-r" . #'consult-history))
+  :config
+  (setq xref-show-xrefs-function #'consult-xref
+		xref-show-definitions-function #'consult-xref))
 
 (use-package consult-dir
   :ensure t
@@ -429,18 +494,46 @@ The DWIM behaviour of this command is as follows:
          ("C-x C-d" . #'consult-dir)
          ("C-x C-j" . #'consult-dir-jump-file))))
 
+(use-package embark
+  :ensure t
+  :after (ace-window evil)
+  :bind
+  (("s-," . #'embark-act)
+   ("s-." . #'embark-dwim)
+   ("<leader> hE" . #'embark-bindings))
+  :init 
+  (setq prefix-help-command #'embark-prefix-help-command)
+  :config
+  ;; TODO
+  )
+
+(use-package embark-consult
+  :ensure t
+  :after (embark consult)
+  :demand t
+  :hook (embark-collect-mode . consult-preview-at-point-mode))
+
+(defun nto--take-me-home ()
+  (interactive)
+  (if (looking-back "/" nil)
+	  (progn
+		(call-interactively #'delete-minibuffer-contents)
+		(insert "~/"))
+	(call-interactively #'self-insert-command)))
+
 (use-package vertico
   :ensure t
   :hook (elpaca-after-init-hook . vertico-mode)
   :config
   (setq vertico-scrool-margin 0
-	vertico-count 10
-	vertico-resize t
-	vertico-cycle t)
+		vertico-count 10
+		vertico-resize t
+		vertico-cycle t)
   :bind
   (:map vertico-map
-	("DEL" . #'vertico-directory-delete-char)
-	("C-DEL" . #'vertico-directory-delete-word)))
+		("~" . #'nto--take-me-home)
+		("DEL" . #'vertico-directory-delete-char)
+		("C-DEL" . #'vertico-directory-delete-word)))
 
 (use-package vertico-mouse
   :ensure nil
@@ -450,7 +543,7 @@ The DWIM behaviour of this command is as follows:
 (use-package orderless
   :ensure t
   :config
-  (setq completion-styles '(orderless basic))
+  (setq completion-styles '(orderless basic partial-completion))
   (setq completion-category-overrides '((file (styles basic partial-completion)))))
 
 (use-package marginalia
@@ -464,11 +557,12 @@ The DWIM behaviour of this command is as follows:
   :ensure t
   :bind
   (:map corfu-map
-        ("<tab>" . #'corfu-complete)
-        ("C-n" . #'corfu-next)
-        ("C-p" . #'corfu-previous)
-        ("RET" . #'corfu-insert)
-        ("C-q" . #'corfu-quick-complete))
+		("C-i" . #'corfu-complete)
+		("C-n" . #'corfu-next)
+		("C-p" . #'corfu-previous)
+		("RET" . #'corfu-insert)
+		("C-q" . #'corfu-quick-complete)
+		(" " . corfu-insert-separator))
   :init
   (global-corfu-mode)
 
@@ -498,7 +592,7 @@ The DWIM behaviour of this command is as follows:
   :ensure t
   :bind ("C-c p" . cape-prefix-map)
   :init
-  (add-hook 'completion-at-point-functions #'cape-file)
+  (add-hook 'completion-at-point-functions #'cape-abbrev)
   (add-hook 'completion-at-point-functions #'cape-dict))
 
 (use-package nerd-icons
@@ -524,12 +618,11 @@ The DWIM behaviour of this command is as follows:
 (use-package better-jumper
   :ensure t
   :after evil
-  :init
-  (global-set-key [remap evil-jump-forward]  #'better-jumper-jump-forward)
-  (global-set-key [remap evil-jump-backward] #'better-jumper-jump-backward)
-  (global-set-key [remap xref-pop-marker-stack] #'better-jumper-jump-backward)
-  (global-set-key [remap xref-go-back] #'better-jumper-jump-backward)
-  (global-set-key [remap xref-go-forward] #'better-jumper-jump-forward))
+  :config
+  (better-jumper-mode +1)
+  (with-eval-after-load 'evil-maps
+	(define-key evil-motion-state-map (kbd "M-[") #'better-jumper-jump-backward)
+	(define-key evil-motion-state-map (kbd "M-]") #'better-jumper-jump-forward)))
 
 (use-package dired
   :ensure nil
@@ -599,16 +692,31 @@ The DWIM behaviour of this command is as follows:
   :config
   (setq denote-directory (file-name-concat (getenv "HOME") "Documents" "Notes" "notes")
         denote-assets-directory (file-name-concat (getenv "HOME") "Documents" "Notes" "assets"))
-  (setq denote-file-type 'markdown-yaml) ;; markdown is more *portable*
+  (setq denote-file-type 'org)
   (setq denote-infer-keywords t)
   (setq denote-sort-keywords t)
   (setq denote-buffer-name-prefix "[Note] ")
   (setq denote-rename-buffer-mode "%D")
   (denote-rename-buffer-mode 1))
 
+(use-package denote-journal
+  :ensure t
+  :commands (denote-journal-new-entry
+             denote-journal-new-or-existing-entry
+             denote-journal-link-or-create-entry)
+  :hook (calendar-mode . denote-journal-calendar-mode)
+  :bind
+  (("<leader> n j" . #'denote-journal-new-or-existing-entry)
+   ("<leader> n J" . #'denote-journal-link-or-create-entry))
+  :config
+  (setq denote-journal-directory (expand-file-name "journal" denote-directory)
+        denote-journal-keyword "journal"
+        denote-journal-title-format 'day-date-month-year))
+
 ;; I love org-mode but it bind to much stuff
 (use-package org
   :ensure nil
+  :defer t
   :bind
   (("<leader> oa" . #'org-agenda)
    :map org-mode-map
@@ -617,30 +725,41 @@ The DWIM behaviour of this command is as follows:
    ("M-;" . nil)
    ("M-l" . nil)
    ("C-c ;" . nil))
-  :config
-  (setq org-agenda-span 'week
-        org-agenda-start-on-weekday 1
-        org-agenda-window-setup 'current-window)
+  :custom
+  (org-agenda-span 'week)
+  (org-agenda-start-on-weekday 1)
+  (org-agenda-window-setup 'current-window)
+  (org-M-RET-may-split-line '((default . nil)))
+  (org-insert-heading-respect-content t)
+  (org-log-done 'time)
+  (org-log-into-drawer t)
+  (org-ellipsis "⮧")
+  (org-adapt-indentation nil)
+  (org-special-ctrl-a/e nil)
+  (org-special-ctrl-k nil)
+  (org-confirm-babel-evaluate nil)
+  (org-src-window-setup 'current-window)
+  (org-edit-src-persistent-message nil)
+  (org-src-fontify-natively t)
+  (org-src-preserve-indentation t)
+  (org-src-tab-acts-natively t)
+  (org-hide-emphasis-markers t)
+  (org-edit-src-content-indentation 0)
+  (org-export-with-toc t)
+  (org-cycle-emulate-tab t)
+  (org-export-headline-levels 8))
 
-  (setq org-M-RET-may-split-line '((default . nil))
-        org-insert-heading-respect-content t
-        org-log-done 'time
-        org-log-into-drawer t
-        org-ellipsis "⮧"
-        org-adapt-indentation nil
-        org-special-ctrl-a/e nil
-        org-special-ctrl-k nil
-        org-confirm-babel-evaluate nil
-        org-src-window-setup 'current-window
-        org-edit-src-persistent-message nil
-        org-src-fontify-natively t
-        org-src-preserve-indentation t
-        org-src-tab-acts-natively t
-        org-hide-emphasis-markers t
-        org-edit-src-content-indentation 0
-        org-export-with-toc t
-        org-cycle-emulate-tab t
-        org-export-headline-levels 8))
+(use-package org-modern
+  :ensure t
+  :defer t
+  :after org
+  :hook
+  ((org-mode . org-modern-mode)
+   (org-agenda-finalize . org-modern-agenda))
+  :custom
+  (org-modern-table nil)
+  (org-modern-star nil)
+  (org-modern-block-fringe nil))
 
 (use-package avy
   :ensure t
@@ -689,7 +808,8 @@ The DWIM behaviour of this command is as follows:
   :hook (prog-mode . rainbow-delimiters-mode))
 
 (defmacro nto--aas-expand-and-move (text n)
-  `(progn
+  `(lambda ()
+     (interactive)
      (insert ,text)
      (backward-char ,n)))
 
@@ -813,7 +933,7 @@ The DWIM behaviour of this command is as follows:
   (set-face-attribute
    'default nil
    :family mono-spaced-font
-   :height 120)
+   :height 180)
 
   (set-face-attribute
    'fixed-pitch nil
@@ -848,14 +968,17 @@ The DWIM behaviour of this command is as follows:
 (use-package naysayer-theme
   :ensure t)
 
-(setq-default indent-tabs-mode nil)
-
 (use-package devdocs
   :ensure t
   :custom
   (devdocs-data-dir (expand-file-name "devdocs" nto--cache))
   :bind
   (("<leader> hd" . #'devdocs-lookup)))
+
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1))
 
 (use-package transient
   :ensure t
@@ -864,6 +987,16 @@ The DWIM behaviour of this command is as follows:
 (use-package magit
   :ensure t
   :if (not (eq system-type 'windows-nt)))
+
+(use-package git-timemachine
+  :ensure t
+  :defer t)
+
+(use-package hl-todo
+  :ensure t
+  :hook (prog-mode . hl-todo-mode)
+  :custom
+  (hl-todo-highlight-punctuation ":"))
 
 (use-package go-mode
   :ensure t)

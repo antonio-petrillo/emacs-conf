@@ -57,8 +57,10 @@
  treesit-font-lock-level 4
  truncate-lines t
  use-dialog-box nil
- use-short-answer t
+ use-short-answers t
  warning-minimum-level :emergency)
+
+(setq-default indent-tabs-mode nil)
 
 (startup-redirect-eln-cache (file-name-concat nto--cache "eln-cache"))
 
