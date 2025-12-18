@@ -43,11 +43,11 @@
 (elpaca `(,@elpaca-order))
 
 (elpaca elpaca-use-package
-        (elpaca-use-package-mode))
+  (elpaca-use-package-mode))
 
 (when (and (eq system-type 'windows-nt)
 	   (not (eq (pwd) "c:/Program Files/Emacs")))
-	   (cd (getenv "HOME")))
+  (cd (getenv "HOME")))
 
 (use-package undo-tree
   :defer t
@@ -73,7 +73,7 @@
         evil-want-C-i-jumpt t
         evil-want-C-u-scroll t
         evil-want-C-d-scroll t
-		evil-want-keybinding nil
+	evil-want-keybinding nil
         evil-want-Y-yank-to-eol t
         evil-split-window-below t
         evil-split-window-right t
@@ -114,18 +114,18 @@
     (kbd "<leader> ,") #'switch-to-buffer
     (kbd "<leader> fs") #'save-buffer
     (kbd "<leader> fr") #'recentf-open-files
-	(kbd "<leader> fd") #'delete-file
+    (kbd "<leader> fd") #'delete-file
     (kbd "<leader> fR") #'rename-file
 
     (kbd "<leader> bk") #'kill-current-buffer
     (kbd "<leader> bK") #'kill-buffer
     (kbd "<leader> br") #'revert-buffer
-	(kbd "<leader> bi") #'ibuffer
-	(kbd "<leader> bn") #'evil-buffer-new
+    (kbd "<leader> bi") #'ibuffer
+    (kbd "<leader> bn") #'evil-buffer-new
 
     (kbd "<leader> bm") #'bookmark-set
     (kbd "<leader> bd") #'bookmark-delete
-	(kbd "<leader> bs") #'bookmark-save
+    (kbd "<leader> bs") #'bookmark-save
 
     (kbd "<leader> SPC") #'execute-extended-command
     (kbd "<leader> M-SPC") #'execute-extended-command-for-buffer
@@ -313,19 +313,19 @@ The DWIM behaviour of this command is as follows:
   (ibuffer-expert t)
   (ibuffer-saved-filter-groups
    '(("default"
-	  ("Programming" (predicate . (derived-mode-p 'prog-mode)))
-	  ("Org" (mode . org-mode))
-	  ("MD" (mode . markdown-mode))
-	  ("Dired" (mode . dired-mode)))))
+      ("Programming" (predicate . (derived-mode-p 'prog-mode)))
+      ("Org" (mode . org-mode))
+      ("MD" (mode . markdown-mode))
+      ("Dired" (mode . dired-mode)))))
   (ibuffer-never-show-predicates
-      '(;; System buffers
-        "^\\*Messages\\*$"
-        "^\\*scratch\\*$"
-        "^\\*Completions\\*$"
-        "^\\*Help\\*$"
-        "^\\*Apropos\\*$"
-        "^\\*info\\*$"
-        "^\\*Async-native-compile-log\\*$"))
+   '(;; System buffers
+     "^\\*Messages\\*$"
+     "^\\*scratch\\*$"
+     "^\\*Completions\\*$"
+     "^\\*Help\\*$"
+     "^\\*Apropos\\*$"
+     "^\\*info\\*$"
+     "^\\*Async-native-compile-log\\*$"))
   (ibuffer-formats
    '((mark " " (name 60 -1 :left))))
 
@@ -347,7 +347,7 @@ The DWIM behaviour of this command is as follows:
   (add-hook 'java-mode-hook 'subword-mode-hook)
   (add-hook 'prog-mode-hook (lambda ()
                               (display-line-numbers-mode 1)
-							  (toggle-truncate-lines 1)
+			      (toggle-truncate-lines 1)
                               (setq-local display-line-numbers 'relative)))
 
   (recentf-mode 1)
@@ -376,8 +376,8 @@ The DWIM behaviour of this command is as follows:
   :ensure nil
   :init
   (setq hs-hide-comments t
-		hs-hide-initial-comment-block t
-		hs-isearch-open t)
+	hs-hide-initial-comment-block t
+	hs-isearch-open t)
   :hook (prog-mode . hs-minor-mode))
 
 (use-package savehist
@@ -402,7 +402,7 @@ The DWIM behaviour of this command is as follows:
 (use-package delsel
   :ensure nil
   :hook (elpaca-after-init-hook . delete-selection-mode))
-                        
+
 (use-package electric
   :ensure nil
   :hook ((prog-mode . electric-indent-mode)
@@ -426,7 +426,7 @@ The DWIM behaviour of this command is as follows:
    ("<leader> pf" . #'project-find-file)
    ("<leader> pk" . #'project-kill-buffers)
    ("<leader> p&" . #'project-async-shell-command)))
-  
+
 (use-package which-key
   :ensure nil
   :hook (after-init . which-key-mode)
@@ -482,7 +482,7 @@ The DWIM behaviour of this command is as follows:
    ("M-r" . #'consult-history))
   :config
   (setq xref-show-xrefs-function #'consult-xref
-		xref-show-definitions-function #'consult-xref))
+	xref-show-definitions-function #'consult-xref))
 
 (use-package consult-dir
   :ensure t
@@ -494,18 +494,58 @@ The DWIM behaviour of this command is as follows:
          ("C-x C-d" . #'consult-dir)
          ("C-x C-j" . #'consult-dir-jump-file))))
 
+(eval-when-compile
+  (defmacro nto--embark-ace-action (fn)
+    `(defun ,(intern (concat "nto--embark-ace-" (symbol-name fn))) ()
+       (interactive)
+       (with-demoted-errors "%s"
+         (require 'ace-window)
+         (let ((aw-dispatch-always t))
+           (aw-switch-to-window (aw-select nil))
+           (call-interactively (symbol-function ',fn))))))
+
+  (defmacro nto--embark-split-action (fn split-type)
+    `(defun ,(intern (concat "nto--embark-"
+                             (symbol-name fn)
+                             "-"
+                             (car (last (split-string
+                                         (symbol-name split-type) "-"))))) ()
+       (interactive)
+       (funcall #',split-type)
+       (call-interactively #',fn)))
+
+  (nto--embark-ace-action find-file)
+  (nto--embark-ace-action switch-to-buffer)
+
+  (nto--embark-split-action find-file split-window-below)
+  (nto--embark-split-action find-file split-window-right)
+
+  (nto--embark-split-action switch-to-buffer split-window-below)
+  (nto--embark-split-action switch-to-buffer split-window-right))
+
+
 (use-package embark
   :ensure t
-  :after (ace-window evil)
   :bind
-  (("s-," . #'embark-act)
-   ("s-." . #'embark-dwim)
-   ("<leader> hE" . #'embark-bindings))
+  (("M-RET" . #'embark-act)
+   ("M-<return>" . #'embark-act)
+   ("C-RET" . #'embark-act)
+   ("C-<return>" . #'embark-act)
+   ("<leader> hE" . #'embark-bindings)
+   (:map embark-file-map
+         ("w" . #'nto--embark-ace-find-file)
+         ("2" . #'nto--embark-find-file-below)
+         ("3" . #'nto--embark-find-file-right))
+   (:map embark-buffer-map
+         ("w" . #'nto--embark-ace-switch-to-buffer)
+         ("2" . #'nto--embark-switch-to-buffer-below)
+         ("3" . #'nto--embark-switch-to-buffer-right))
+   (:map minibuffer-local-map
+         ("C-c C-c" . #'embark-collect)
+         ("C-c C-e" . #'embark-export)
+         ("C-c C-b" . #'embark-become)))
   :init 
-  (setq prefix-help-command #'embark-prefix-help-command)
-  :config
-  ;; TODO
-  )
+  (setq prefix-help-command #'embark-prefix-help-command))
 
 (use-package embark-consult
   :ensure t
@@ -516,24 +556,24 @@ The DWIM behaviour of this command is as follows:
 (defun nto--take-me-home ()
   (interactive)
   (if (looking-back "/" nil)
-	  (progn
-		(call-interactively #'delete-minibuffer-contents)
-		(insert "~/"))
-	(call-interactively #'self-insert-command)))
+      (progn
+	(call-interactively #'delete-minibuffer-contents)
+	(insert "~/"))
+    (call-interactively #'self-insert-command)))
 
 (use-package vertico
   :ensure t
   :hook (elpaca-after-init-hook . vertico-mode)
   :config
   (setq vertico-scrool-margin 0
-		vertico-count 10
-		vertico-resize t
-		vertico-cycle t)
+	vertico-count 10
+	vertico-resize t
+	vertico-cycle t)
   :bind
   (:map vertico-map
-		("~" . #'nto--take-me-home)
-		("DEL" . #'vertico-directory-delete-char)
-		("C-DEL" . #'vertico-directory-delete-word)))
+	("~" . #'nto--take-me-home)
+	("DEL" . #'vertico-directory-delete-char)
+	("C-DEL" . #'vertico-directory-delete-word)))
 
 (use-package vertico-mouse
   :ensure nil
@@ -557,12 +597,12 @@ The DWIM behaviour of this command is as follows:
   :ensure t
   :bind
   (:map corfu-map
-		("C-i" . #'corfu-complete)
-		("C-n" . #'corfu-next)
-		("C-p" . #'corfu-previous)
-		("RET" . #'corfu-insert)
-		("C-q" . #'corfu-quick-complete)
-		(" " . corfu-insert-separator))
+	("C-i" . #'corfu-complete)
+	("C-n" . #'corfu-next)
+	("C-p" . #'corfu-previous)
+	("RET" . #'corfu-insert)
+	("C-q" . #'corfu-quick-complete)
+	("M-C-SPC" . corfu-insert-separator))
   :init
   (global-corfu-mode)
 
@@ -578,6 +618,7 @@ The DWIM behaviour of this command is as follows:
   :config
   (corfu-popupinfo-mode 1)
   (corfu-history-mode 1)
+  (corfu-echo-mode 1)
 
   (with-eval-after-load 'savehist
     (corfu-history-mode 1)
@@ -592,8 +633,8 @@ The DWIM behaviour of this command is as follows:
   :ensure t
   :bind ("C-c p" . cape-prefix-map)
   :init
-  (add-hook 'completion-at-point-functions #'cape-abbrev)
-  (add-hook 'completion-at-point-functions #'cape-dict))
+  (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-file))
 
 (use-package nerd-icons
   :ensure t)
@@ -621,8 +662,8 @@ The DWIM behaviour of this command is as follows:
   :config
   (better-jumper-mode +1)
   (with-eval-after-load 'evil-maps
-	(define-key evil-motion-state-map (kbd "M-[") #'better-jumper-jump-backward)
-	(define-key evil-motion-state-map (kbd "M-]") #'better-jumper-jump-forward)))
+    (define-key evil-motion-state-map (kbd "M-[") #'better-jumper-jump-backward)
+    (define-key evil-motion-state-map (kbd "M-]") #'better-jumper-jump-forward)))
 
 (use-package dired
   :ensure nil
@@ -761,6 +802,17 @@ The DWIM behaviour of this command is as follows:
   (org-modern-star nil)
   (org-modern-block-fringe nil))
 
+(use-package org-appear
+  :ensure t
+  :defer t
+  :hook  
+  ((org-mode . (lambda ()
+                 (add-hook 'evil-insert-state-entry-hook
+                           #'org-appear-manual-start nil t)
+                 (add-hook 'evil-insert-state-exit-hook
+                           #'org-appear-manual-stop nil t)))
+   (org-mode . org-appear-mode)))
+
 (use-package avy
   :ensure t
   :after evil
@@ -771,7 +823,7 @@ The DWIM behaviour of this command is as follows:
    ("<leader> jl" . #'avy-goto-line)
    ("<leader> je" . #'avy-goto-end-of-line)
    ("<leader> jw" . #'avy-goto-word-0)))
-   
+
 (use-package ace-window
   :ensure t
   :after evil
@@ -821,47 +873,47 @@ The DWIM behaviour of this command is as follows:
    (latex-mode . aas-activate-for-major-mode))
   :config
   (aas-set-snippets 'markdown-mode
-    ";b" (nto--aas-expand-and-move "**** " 3)
-    ";/" (nto--aas-expand-and-move "** " 2))
+                    ";b" (nto--aas-expand-and-move "**** " 3)
+                    ";/" (nto--aas-expand-and-move "** " 2))
   (aas-set-snippets 'org-mode
-    "mbb" (nto--aas-expand-and-move "\\mathbb{}" 1)
-    "mca" (nto--aas-expand-and-move "\\mathcal{}" 1)
-    ";ra" "\\rightarrow "
-    ";la" "\\leftarrow "
-    "__" (nto--aas-expand-and-move "_{}" 1)
-    "^^" (nto--aas-expand-and-move "^{}" 1)
-    "_sum" (nto--aas-expand-and-move "\\sum_{}" 1)
-    "^sum" (nto--aas-expand-and-move "\\sum_{}^{}" 4)
-    "_int" (nto--aas-expand-and-move "\\int_{}" 1)
-    "^int" (nto--aas-expand-and-move "\\int_{}^{}" 4)
-    ";b" (nto--aas-expand-and-move "** " 2)
-    ";/" (nto--aas-expand-and-move "// " 2)
-    ";A" "\\forall"
-    ";E" "\\exists"
-    ";|" "\\lor"
-    ";&" "\\land"
-    ";a" "\\alpha"
-    ";;b" "\\beta"
-    ";c" "\\gamma"
-    ";d" "\\delta"
-    ";e" "\\eta"
-    ";E" "\\Eta"
-    ";m" "\\mu"
-    ";n" "\\nu"
-    ";f" "\\phi"
-    ";;f" "\\varphi"
-    ";g" "\\nabla"
-    ";s" "\\sigma"
-    ";S" "\\Sigma"
-    ";x" "\\times"
-    ";." "\\cdot"
-    ";;." "\\cdots"
-    ";;$" (nto--aas-expand-and-move "$$$$ " 3)
-    ";;4" (nto--aas-expand-and-move "$$$$ " 3)
-    ";$" (nto--aas-expand-and-move "$$ " 2)
-    ";4" (nto--aas-expand-and-move "$$ " 2)
-    ";On" "O(n)"
-    ";Oa" "O(1)"))
+                    "mbb" (nto--aas-expand-and-move "\\mathbb{}" 1)
+                    "mca" (nto--aas-expand-and-move "\\mathcal{}" 1)
+                    ";ra" "\\rightarrow "
+                    ";la" "\\leftarrow "
+                    "__" (nto--aas-expand-and-move "_{}" 1)
+                    "^^" (nto--aas-expand-and-move "^{}" 1)
+                    "_sum" (nto--aas-expand-and-move "\\sum_{}" 1)
+                    "^sum" (nto--aas-expand-and-move "\\sum_{}^{}" 4)
+                    "_int" (nto--aas-expand-and-move "\\int_{}" 1)
+                    "^int" (nto--aas-expand-and-move "\\int_{}^{}" 4)
+                    ";b" (nto--aas-expand-and-move "** " 2)
+                    ";/" (nto--aas-expand-and-move "// " 2)
+                    ";A" "\\forall"
+                    ";E" "\\exists"
+                    ";|" "\\lor"
+                    ";&" "\\land"
+                    ";a" "\\alpha"
+                    ";;b" "\\beta"
+                    ";c" "\\gamma"
+                    ";d" "\\delta"
+                    ";e" "\\eta"
+                    ";E" "\\Eta"
+                    ";m" "\\mu"
+                    ";n" "\\nu"
+                    ";f" "\\phi"
+                    ";;f" "\\varphi"
+                    ";g" "\\nabla"
+                    ";s" "\\sigma"
+                    ";S" "\\Sigma"
+                    ";x" "\\times"
+                    ";." "\\cdot"
+                    ";;." "\\cdots"
+                    ";;$" (nto--aas-expand-and-move "$$$$ " 3)
+                    ";;4" (nto--aas-expand-and-move "$$$$ " 3)
+                    ";$" (nto--aas-expand-and-move "$$ " 2)
+                    ";4" (nto--aas-expand-and-move "$$ " 2)
+                    ";On" "O(n)"
+                    ";Oa" "O(1)"))
 
 (use-package rotate-text
   :ensure (:host github :repo "debug-ito/rotate-text.el")
@@ -890,10 +942,7 @@ The DWIM behaviour of this command is as follows:
          (text-mode . jinx-mode))
   :bind
   (([remap ispell-word] . #'jinx-correct)
-   ("<leader> lc" . #'jinx-correct)
-   ("<leader> ll" . #'jinx-languages)
-   ("<leader> ln" . #'jinx-next)
-   ("<leader> lp" . #'jinx-previous))
+   ("<leader> lc" . #'jinx-correct))
   :config
   (setopt jinx-languages "en_US,it_IT"))
 
@@ -901,13 +950,13 @@ The DWIM behaviour of this command is as follows:
   :ensure t
   :custom
   (google-translate-translation-directions-alist
-        '(("it" . "en") ("en" . "it")))
+   '(("it" . "en") ("en" . "it")))
   (google-translate-default-source-language "it")
   (google-translate-default-target-language "en")
   (google-translate-translation-to-kill-ring t)
   :bind
-  (("<leader> lt" . google-translate-at-point)
-   ("<leader> lT" . google-translate-at-point-reverse))
+  (("<leader> lt" . #'google-translate-at-point)
+   ("<leader> lT" . #'google-translate-at-point-reverse))
   :init
   (add-to-list 'display-buffer-alist
 	       '("\\*Google Translate\\*"
@@ -916,6 +965,17 @@ The DWIM behaviour of this command is as follows:
 		 (dedicated . t)
 		 (window-height . fit-window-to-buffer)
 		 (body-function . (lambda (window) (select-window window))))))
+
+(use-package powerthesaurus
+  :ensure t
+  :bind
+  ("<leader> la" . #'powerthesaurus-lookup-antonyms-dwim)
+  ("<leader> ld" . #'powerthesaurus-lookup-definitions-dwim)
+  ("<leader> lp" . #'powerthesaurus-lookup-dwim)
+  ("<leader> lr" . #'powerthesaurus-lookup-related-dwim)
+  ("<leader> ls" . #'powerthesaurus-lookup-synonyms-dwim)
+  ("<leader> lS" . #'powerthesaurus-lookup-sentences-dwim)
+  ("<leader> lP" . #'powerthesaurus-transient))
 
 (let ((mono-spaced-font "Monospace")
       (proportionately-spaced-font "Sans"))
@@ -948,6 +1008,9 @@ The DWIM behaviour of this command is as follows:
 (use-package doom-themes
   :ensure t)
 
+(use-package ef-themes
+  :ensure t)
+
 (use-package doric-themes
   :ensure t)
 
@@ -975,8 +1038,15 @@ The DWIM behaviour of this command is as follows:
   :bind
   (("<leader> hd" . #'devdocs-lookup)))
 
+(use-package ws-butler
+  :ensure t
+  :hook (prog-mode . ws-butler-mode))
+
 (use-package editorconfig
   :ensure t
+  :after ws-butler
+  :custom
+  (editorconfig-trim-whitespaces-mode #'ws-butler-mode)
   :config
   (editorconfig-mode 1))
 
@@ -986,11 +1056,27 @@ The DWIM behaviour of this command is as follows:
 
 (use-package magit
   :ensure t
-  :if (not (eq system-type 'windows-nt)))
+  :if (not (eq system-type 'windows-nt))
+  :bind
+  ("<leader> gg" . #'magit-status)
+  ("<leader> gl" . #'magit-log)
+  ("<leader> gb" . #'magit-branch)
+  ("<leader> gf" . #'magit-fetch)
+  ("<leader> gp" . #'magit-pull)
+  ("<leader> gP" . #'magit-push)
+  ("<leader> gc" . #'magit-commit))
 
 (use-package git-timemachine
   :ensure t
-  :defer t)
+  :defer t
+  :bind
+  ("<leader> gt" . #'git-timemachine-toggle)
+  :config
+  (evil-define-key 'normal 'git-timemachine-mode-map
+    (kbd "C-p") #'git-timemachine-show-previous-revision
+    (kbd "C-n") #'git-timemachine-show-next-revision
+    (kbd "gb")  #'git-timemachine-blame
+    (kbd "gtc") #'git-timemachine-show-commit))
 
 (use-package hl-todo
   :ensure t

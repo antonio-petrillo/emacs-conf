@@ -42,7 +42,6 @@
  mouse-wheel-scroll-amount '(2 ((shift) . hscroll)
                                (mouse-wheel-scroll-amount-horizontal 2))
  org-directory (file-name-concat (getenv "HOME") "Documents" "Org")
- org-persist-directory temporary-file-directory
  pixel-scroll-precision-mode t
  pixel-scroll-precision-use-momentum nil
  read-answer-short t
