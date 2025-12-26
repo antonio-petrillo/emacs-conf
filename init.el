@@ -1008,6 +1008,11 @@ The DWIM behaviour of this command is as follows:
 (use-package doom-themes
   :ensure t)
 
+(use-package doom-themes
+  :ensure t
+  :init 
+  (load-theme 'doom-gruvbox))
+
 (use-package ef-themes
   :ensure t)
 
@@ -1024,9 +1029,7 @@ The DWIM behaviour of this command is as follows:
   :ensure t)
 
 (use-package gruber-darker-theme
-  :ensure t
-  :init
-  (load-theme 'gruber-darker))
+  :ensure t)
 
 (use-package naysayer-theme
   :ensure t)
@@ -1077,12 +1080,6 @@ The DWIM behaviour of this command is as follows:
     (kbd "C-n") #'git-timemachine-show-next-revision
     (kbd "gb")  #'git-timemachine-blame
     (kbd "gtc") #'git-timemachine-show-commit))
-
-(use-package hl-todo
-  :ensure t
-  :hook (prog-mode . hl-todo-mode)
-  :custom
-  (hl-todo-highlight-punctuation ":"))
 
 (use-package go-mode
   :ensure t)

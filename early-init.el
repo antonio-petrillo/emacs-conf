@@ -72,7 +72,7 @@
 	     '(tool-bar-lines . 0))
 
 (add-to-list 'default-frame-alist
-	     '(vertical-scrool-bars . 0))
+	     '(vertical-scroll-bars . nil))
 
 (when (native-comp-available-p)
   (setq native-comp-async-report-warnings-errors 'silent
