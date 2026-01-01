@@ -263,6 +263,15 @@
   (evil-traces-use-diff-faces)
   (evil-traces-mode))
 
+(defvar nto--user-config
+  (file-name-concat (getenv "HOME") ".local" "emacs" "user-config.el"))
+
+(if (file-exists-p nto--user-config)
+    (load nto--user-config)
+  (progn
+    (copy-file "user-config-template.el" nto--user-config nil)
+    (load nto--user-config)))
+
 (defun nto--backward-kill-word()
   "Same as `backward-kill-word' but if it is invoked on a white space character
 at the beginning of the line it will stop at it, furthermore if it is invoked
@@ -1004,35 +1013,6 @@ The DWIM behaviour of this command is as follows:
    'variable-pitch nil
    :family proportionately-spaced-font
    :height 1.0))
-
-(use-package doom-themes
-  :ensure t)
-
-(use-package doom-themes
-  :ensure t
-  :init 
-  (load-theme 'doom-gruvbox))
-
-(use-package ef-themes
-  :ensure t)
-
-(use-package doric-themes
-  :ensure t)
-
-(use-package tron-legacy-theme
-  :ensure t)
-
-(use-package spacemacs-theme
-  :ensure t)
-
-(use-package anti-zenburn-theme
-  :ensure t)
-
-(use-package gruber-darker-theme
-  :ensure t)
-
-(use-package naysayer-theme
-  :ensure t)
 
 (use-package devdocs
   :ensure t
