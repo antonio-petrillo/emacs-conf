@@ -49,6 +49,20 @@
 	   (not (eq (pwd) "c:/Program Files/Emacs")))
   (cd (getenv "HOME")))
 
+(use-package exec-path-from-shell
+  :if (eq system-type 'gnu/linux)
+  :ensure t)
+
+;; from prelude emacs
+(when (and (eq system-type 'gnu/linux) (getenv "WSLENV"))
+  (let ((cmd-exe "/mnt/c/Windows/System32/cmd.exe")
+        (cmd-args '("/c" "start")))
+    (when (file-exists-p cmd-exe)
+      (setq browse-url-generic-program  cmd-exe
+            browse-url-generic-args     cmd-args
+            browse-url-browser-function 'browse-url-generic
+            search-web-default-browser 'browse-url-generic))))
+
 (use-package undo-tree
   :defer t
   :ensure t
@@ -353,7 +367,7 @@ The DWIM behaviour of this command is as follows:
 
   (global-unset-key (kbd "C-z"))
 
-  (add-hook 'java-mode-hook 'subword-mode-hook)
+  (add-hook 'java-mode-hook 'subword-mode)
   (add-hook 'prog-mode-hook (lambda ()
                               (display-line-numbers-mode 1)
 			      (toggle-truncate-lines 1)
@@ -536,10 +550,9 @@ The DWIM behaviour of this command is as follows:
 (use-package embark
   :ensure t
   :bind
-  (("M-RET" . #'embark-act)
-   ("M-<return>" . #'embark-act)
-   ("C-RET" . #'embark-act)
-   ("C-<return>" . #'embark-act)
+  (("C-c C-a" . #'embark-act)
+   ("C-." . #'embark-act)
+   ("C-," . #'embark-dwim)
    ("<leader> hE" . #'embark-bindings)
    (:map embark-file-map
          ("w" . #'nto--embark-ace-find-file)
@@ -553,7 +566,7 @@ The DWIM behaviour of this command is as follows:
          ("C-c C-c" . #'embark-collect)
          ("C-c C-e" . #'embark-export)
          ("C-c C-b" . #'embark-become)))
-  :init 
+  :init
   (setq prefix-help-command #'embark-prefix-help-command))
 
 (use-package embark-consult
@@ -580,7 +593,7 @@ The DWIM behaviour of this command is as follows:
 	vertico-cycle t)
   :bind
   (:map vertico-map
-	("~" . #'nto--take-me-home)
+	("C-a" . #'nto--take-me-home)
 	("DEL" . #'vertico-directory-delete-char)
 	("C-DEL" . #'vertico-directory-delete-word)))
 
@@ -597,7 +610,7 @@ The DWIM behaviour of this command is as follows:
 
 (use-package marginalia
   :ensure t
-  :hook (elpaca-after-init-hook . vertico-mode)
+  :hook (elpaca-after-init-hook . marginalia-mode)
   :bind
   (:map minibuffer-local-map
 	("M-A" . #'marginalia-cycle)))
@@ -740,8 +753,8 @@ The DWIM behaviour of this command is as follows:
    ("<leader> n b" . #'denote-backlinks)
    ("<leader> n r" . #'denote-rename-file-using-front-matter))
   :config
-  (setq denote-directory (file-name-concat (getenv "HOME") "Documents" "Notes" "notes")
-        denote-assets-directory (file-name-concat (getenv "HOME") "Documents" "Notes" "assets"))
+  (setq denote-directory (file-name-concat nto--notes-dir "notes")
+        denote-assets-directory (file-name-concat nto--notes-dir "assets"))
   (setq denote-file-type 'org)
   (setq denote-infer-keywords t)
   (setq denote-sort-keywords t)
@@ -774,8 +787,15 @@ The DWIM behaviour of this command is as follows:
    ("C-," . nil)
    ("M-;" . nil)
    ("M-l" . nil)
-   ("C-c ;" . nil))
+   ("C-c ;" . nil)
+   ("<localleader> c" . #'org-toggle-checkbox)
+   ("<localleader> st" . #'org-time-stamp)
+   ("<localleader> ss" . #'org-schedule)
+   ("<localleader> sd" . #'org-deadline)
+   ("<localleader> t" . #'org-agenda-todo)
+   ("<localleader> f" . #'org-footnote-new))
   :custom
+  (org-agenda-files (directory-files-recursively org-directory ".*journal.*\\.org$"))
   (org-agenda-span 'week)
   (org-agenda-start-on-weekday 1)
   (org-agenda-window-setup 'current-window)
@@ -882,47 +902,15 @@ The DWIM behaviour of this command is as follows:
    (latex-mode . aas-activate-for-major-mode))
   :config
   (aas-set-snippets 'markdown-mode
+                    ";[" "[ ] "
                     ";b" (nto--aas-expand-and-move "**** " 3)
-                    ";/" (nto--aas-expand-and-move "** " 2))
+                    ";i" (nto--aas-expand-and-move "** " 2))
   (aas-set-snippets 'org-mode
-                    "mbb" (nto--aas-expand-and-move "\\mathbb{}" 1)
-                    "mca" (nto--aas-expand-and-move "\\mathcal{}" 1)
-                    ";ra" "\\rightarrow "
-                    ";la" "\\leftarrow "
-                    "__" (nto--aas-expand-and-move "_{}" 1)
-                    "^^" (nto--aas-expand-and-move "^{}" 1)
-                    "_sum" (nto--aas-expand-and-move "\\sum_{}" 1)
-                    "^sum" (nto--aas-expand-and-move "\\sum_{}^{}" 4)
-                    "_int" (nto--aas-expand-and-move "\\int_{}" 1)
-                    "^int" (nto--aas-expand-and-move "\\int_{}^{}" 4)
+                    ";[" "[ ] "
                     ";b" (nto--aas-expand-and-move "** " 2)
-                    ";/" (nto--aas-expand-and-move "// " 2)
-                    ";A" "\\forall"
-                    ";E" "\\exists"
-                    ";|" "\\lor"
-                    ";&" "\\land"
-                    ";a" "\\alpha"
-                    ";;b" "\\beta"
-                    ";c" "\\gamma"
-                    ";d" "\\delta"
-                    ";e" "\\eta"
-                    ";E" "\\Eta"
-                    ";m" "\\mu"
-                    ";n" "\\nu"
-                    ";f" "\\phi"
-                    ";;f" "\\varphi"
-                    ";g" "\\nabla"
-                    ";s" "\\sigma"
-                    ";S" "\\Sigma"
-                    ";x" "\\times"
-                    ";." "\\cdot"
-                    ";;." "\\cdots"
-                    ";;$" (nto--aas-expand-and-move "$$$$ " 3)
+                    ";i" (nto--aas-expand-and-move "// " 2)
                     ";;4" (nto--aas-expand-and-move "$$$$ " 3)
-                    ";$" (nto--aas-expand-and-move "$$ " 2)
-                    ";4" (nto--aas-expand-and-move "$$ " 2)
-                    ";On" "O(n)"
-                    ";Oa" "O(1)"))
+                    ";4" (nto--aas-expand-and-move "$$ " 2)))
 
 (use-package rotate-text
   :ensure (:host github :repo "debug-ito/rotate-text.el")
@@ -1034,8 +1022,7 @@ The DWIM behaviour of this command is as follows:
   (editorconfig-mode 1))
 
 (use-package transient
-  :ensure t
-  :if (not (eq system-type 'windows-nt)))
+  :ensure t)
 
 (use-package magit
   :ensure t

@@ -5,6 +5,9 @@
 ;;
 ;;; Code:
 
+(defvar nto--notes-dir
+  (file-name-concat (getenv "HOME") "Documents" "Notes"))
+
 (defvar nto--cache
   (file-name-concat (getenv "HOME") ".local" "emacs"))
 
@@ -41,7 +44,7 @@
  make-backup-files nil
  mouse-wheel-scroll-amount '(2 ((shift) . hscroll)
                                (mouse-wheel-scroll-amount-horizontal 2))
- org-directory (file-name-concat (getenv "HOME") "Documents" "Org")
+ org-directory nto--notes-dir
  pixel-scroll-precision-mode t
  pixel-scroll-precision-use-momentum nil
  read-answer-short t
