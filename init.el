@@ -1048,6 +1048,10 @@ The DWIM behaviour of this command is as follows:
     (kbd "gb")  #'git-timemachine-blame
     (kbd "gtc") #'git-timemachine-show-commit))
 
+(use-package git-gutter
+  :ensure t
+  :hook (prog-mode . git-gutter))
+
 (use-package go-mode
   :ensure t)
 
@@ -1065,3 +1069,6 @@ The DWIM behaviour of this command is as follows:
   :bind
   (:map elixir-mode-map
         ("<localleader> f" . #'elixir-format)))
+
+(use-package lua-mode
+  :ensure t)
