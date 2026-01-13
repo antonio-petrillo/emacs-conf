@@ -51,7 +51,9 @@
 
 (use-package exec-path-from-shell
   :if (eq system-type 'gnu/linux)
-  :ensure t)
+  :ensure t
+  :init
+  (exec-path-from-shell-initialize))
 
 ;; from prelude emacs
 (when (and (eq system-type 'gnu/linux) (getenv "WSLENV"))
@@ -105,6 +107,7 @@
   (evil-define-key '(normal visual operator replace motion) 'global
     (kbd "gr") #'revert-buffer)
 
+  (define-key evil-insert-state-map (kbd "C-k") #'dabbrev-expand)
   (define-key evil-insert-state-map (kbd "C-n") nil)
   (define-key evil-insert-state-map (kbd "C-p") nil)
   (define-key evil-insert-state-map (kbd "C-q") nil)
@@ -1063,6 +1066,14 @@ The DWIM behaviour of this command is as follows:
         ("<localleader> C" . #'odin-check-project)
         ("<localleader> r" . #'odin-run-project)
         ("<localleader> t" . #'odin-test-project)))
+
+(use-package flycheck
+  :ensure t
+  :hook (prog-mode . flycheck-mode))
+
+(use-package flycheck-odin
+  :ensure (:host github :repo "mattt-b/flycheck-odin")
+  :hook (flycheck-mode . flycheck-odin-setup))
 
 (use-package elixir-mode
   :ensure t
