@@ -1022,6 +1022,9 @@ The DWIM behaviour of this command is as follows:
   :custom
   (editorconfig-trim-whitespaces-mode #'ws-butler-mode)
   :config
+  (add-to-list 'editorconfig-exclude-regexps
+               "\\.\\(zip\\|\\(doc\\|xls\\|ppt\\)x\\)\\'")
+  (setq editorconfig-get-properties-function #'editorconfig-get-properties)
   (editorconfig-mode 1))
 
 (use-package transient
@@ -1065,7 +1068,13 @@ The DWIM behaviour of this command is as follows:
         ("<localleader> c" . #'odin-build-project)
         ("<localleader> C" . #'odin-check-project)
         ("<localleader> r" . #'odin-run-project)
-        ("<localleader> t" . #'odin-test-project)))
+        ("<localleader> t" . #'odin-test-project))
+  :config
+  (add-hook 'odin-mode-hook (lambda ()
+                              (setq-local indent-tabs-mode t)
+                              (setq-local indent-tabs-mode t)
+                              (setq-local indent-line-function #'insert-tab)
+                              (setq-local tab-width 8))))
 
 (use-package flycheck
   :ensure t
