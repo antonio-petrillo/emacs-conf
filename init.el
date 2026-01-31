@@ -1072,8 +1072,7 @@ The DWIM behaviour of this command is as follows:
   :config
   (add-hook 'odin-mode-hook (lambda ()
                               (setq-local indent-tabs-mode t)
-                              (setq-local indent-tabs-mode t)
-                              (setq-local indent-line-function #'insert-tab)
+                              (setq-local indent-line-function #'indent-relative)
                               (setq-local tab-width 8))))
 
 (use-package flycheck
