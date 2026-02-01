@@ -1061,33 +1061,32 @@ The DWIM behaviour of this command is as follows:
 (use-package go-mode
   :ensure t)
 
-(defun nto--format-and-save (arg)
-  "`save-buffer', but the prefix ARG also inhibits format-on-save behavior."
-  (interactive "P")
-  (let ((apheleia-mode (and apheleia-mode (memq arg '(nil 1)))))
-    (call-interactively #'save-buffer)
-    (revert-buffer :noconfirm t)))
+(defun nto--run-odinfmt (&optional path-to-odinfmt)
+  "Run `odinfmt' on current buffer without save, if called in a mode different than `odin-mode' it does absolute nothing."
+  (interactive)
+  (when (eq major-mode 'odin-mode)
+    (let* ((shell-command-dont-erase-buffer 'erase)
+           (buffer (current-buffer))
+           (filename (buffer-file-name buffer))
+           (cmd (or path-to-odinfmt "odinfmt"))
+           (odinfmt-cmd (format "%s -path:%s" cmd filename)))
+      (message (concat "Format buffer:" (file-name-nondirectory filename)))
+      (shell-command odinfmt-cmd buffer))))
 
-(use-package apheleia
-  :ensure t
-  :init
-  (add-hook 'elpaca-after-init-hook #'apheleia-global-mode)
-  :bind
-  ([remap save-buffer] . #'nto--format-and-save)
-  :config
-  (push '(odinfmt . ("odinfmt" filepath "-w"))
-        apheleia-formatters)
-  (add-to-list 'apheleia-mode-alist '(odin-mode . odinfmt)))
+;; (use-package odin-mode
+;;   :ensure (:host sourcehut :repo "mgmarlow/odin-mode")
+;;   :bind
+;;   (:map odin-mode-map
+;;         ("<localleader> c" . #'odin-build-project)
+;;         ("<localleader> C" . #'odin-check-project)
+;;         ("<localleader> f" . #'nto--format-and-save)
+;;         ("<localleader> r" . #'odin-run-project)
+;;         ("<localleader> t" . #'odin-test-project))
+;;   :config
+;;   (add-hook 'odin-mode-hook 'nto--odin-setup))
 
-(use-package odin-mode
-  :ensure (:host sourcehut :repo "mgmarlow/odin-mode")
-  :bind
-  (:map odin-mode-map
-        ("<localleader> c" . #'odin-build-project)
-        ("<localleader> C" . #'odin-check-project)
-        ("<localleader> f" . #'nto--format-and-save)
-        ("<localleader> r" . #'odin-run-project)
-        ("<localleader> t" . #'odin-test-project)))
+(add-to-list 'load-path "/home/nto/Code/odin-mode") ;; NOTE: tmp untily I fork odin-mode
+(require 'odin-mode)
 
 (use-package flycheck
   :ensure t
@@ -1095,7 +1094,7 @@ The DWIM behaviour of this command is as follows:
 
 (use-package flycheck-odin
   :ensure (:host github :repo "mattt-b/flycheck-odin")
-  :hook (flycheck-mode . flycheck-odin-setup))
+  :hook (odin-mode . flycheck-odin-setup))
 
 (use-package elixir-mode
   :ensure t
