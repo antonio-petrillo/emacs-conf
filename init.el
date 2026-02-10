@@ -1,7 +1,5 @@
-;; init.el --- Builtin module -*- lexical-binding: t; -*-
-;;; Commentary:
-;;
-;;; Code:
+;;; init.el --- Initialization file for Emacs -*- lexical-binding: t; -*-
+;;; Commentary: Emacs Startup File --- initialization for Emacs
 
 (defvar elpaca-installer-version 0.11)
 (defvar elpaca-directory (expand-file-name "elpaca/" nto--cache))
@@ -1065,36 +1063,25 @@ The DWIM behaviour of this command is as follows:
   "Run `odinfmt' on current buffer without save, if called in a mode different than `odin-mode' it does absolute nothing."
   (interactive)
   (when (eq major-mode 'odin-mode)
-    (let* ((shell-command-dont-erase-buffer 'erase)
-           (buffer (current-buffer))
+    (let* ((buffer (current-buffer))
            (filename (buffer-file-name buffer))
-           (cmd (or path-to-odinfmt "odinfmt"))
-           (odinfmt-cmd (format "%s -path:%s" cmd filename)))
-      (message (concat "Format buffer:" (file-name-nondirectory filename)))
-      (shell-command odinfmt-cmd buffer))))
+           (directory (directory-file-name (file-name-directory filename)))
+           (odinfmt-cmd (format "%s -path:%s -w -file" "odinfmt" filename)) ;; TODO: accept optional arg for `odinfmt' path
+           )
+      (progn
+        (shell-command odinfmt-cmd buffer)
+        (revert-buffer :noconfirm t))
+        (message (concat "Formatting: " (file-name-nondirectory filename))))))
 
-;; (use-package odin-mode
-;;   :ensure (:host sourcehut :repo "mgmarlow/odin-mode")
-;;   :bind
-;;   (:map odin-mode-map
-;;         ("<localleader> c" . #'odin-build-project)
-;;         ("<localleader> C" . #'odin-check-project)
-;;         ("<localleader> f" . #'nto--format-and-save)
-;;         ("<localleader> r" . #'odin-run-project)
-;;         ("<localleader> t" . #'odin-test-project))
-;;   :config
-;;   (add-hook 'odin-mode-hook 'nto--odin-setup))
-
-(add-to-list 'load-path "/home/nto/Code/odin-mode") ;; NOTE: tmp untily I fork odin-mode
-(require 'odin-mode)
-
-(use-package flycheck
-  :ensure t
-  :hook (prog-mode . flycheck-mode))
-
-(use-package flycheck-odin
-  :ensure (:host github :repo "mattt-b/flycheck-odin")
-  :hook (odin-mode . flycheck-odin-setup))
+(use-package odin-mode
+  :ensure (:host github :repo "antonio-petrillo/odin-mode")
+  :bind
+  (:map odin-mode-map
+        ("<localleader> c" . #'odin-build-project)
+        ("<localleader> C" . #'odin-check-project)
+        ("<localleader> f" . #'nto--run-odinfmt)
+        ("<localleader> r" . #'odin-run-project)
+        ("<localleader> t" . #'odin-test-project)))
 
 (use-package elixir-mode
   :ensure t
@@ -1104,3 +1091,5 @@ The DWIM behaviour of this command is as follows:
 
 (use-package lua-mode
   :ensure t)
+
+(use-package zig-mode :ensure t)

@@ -1,6 +1,6 @@
 #+title: Readme
 
-This config is meant to use as a really minimal emacs in the terminal.
+This config is just for me, but you may find something useful that I in my turn I copied from someone else.
 
 * To try
 + [[https://github.com/larstvei/Focus][Focus]], dim surround text

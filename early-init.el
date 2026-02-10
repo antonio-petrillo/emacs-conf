@@ -17,6 +17,12 @@
 (setq eshell-directory-name (file-name-concat nto--cache "eshell")
       treesit-extra-load-path `(,(file-name-concat nto--cache "tree-sitter")))
 
+
+(when (fboundp 'native-comp-eln-load-path)
+  (setq native-comp-eln-load-path (file-name-concat nto--cache "eln-cache")))
+
+(startup-redirect-eln-cache (file-name-concat nto--cache "eln-cache"))
+
 (setq
  auto-revert-verbose nil
  auto-save-list-file-prefix (file-name-concat nto--cache "auto-save-list/.saves-")
@@ -63,8 +69,6 @@
  warning-minimum-level :emergency)
 
 (setq-default indent-tabs-mode nil)
-
-(startup-redirect-eln-cache (file-name-concat nto--cache "eln-cache"))
 
 (load custom-file :no-error-if-file-is-missing)
 
