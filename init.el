@@ -756,7 +756,17 @@ The DWIM behaviour of this command is as follows:
   :config
   (setq denote-directory (file-name-concat nto--notes-dir "notes")
         denote-assets-directory (file-name-concat nto--notes-dir "assets"))
-  (setq denote-file-type 'org)
+  (setq denote-toml-front-matter
+        "---
+title      = %s
+date       = %s
+tags       = %s
+identifier = %s
+signature  = %s
+---
+
+")
+  (setq denote-file-type 'markdown-toml)
   (setq denote-infer-keywords t)
   (setq denote-sort-keywords t)
   (setq denote-buffer-name-prefix "[Note] ")
@@ -1025,6 +1035,20 @@ The DWIM behaviour of this command is as follows:
   (setq editorconfig-get-properties-function #'editorconfig-get-properties)
   (editorconfig-mode 1))
 
+(use-package hl-todo
+  :ensure t
+  :init
+  (keymap-set hl-todo-mode-map "C-c t p" #'hl-todo-previous)
+  (keymap-set hl-todo-mode-map "C-c t n" #'hl-todo-next)
+  (keymap-set hl-todo-mode-map "C-c t o" #'hl-todo-occur)
+  (keymap-set hl-todo-mode-map "C-c t i" #'hl-todo-insert))
+
+(use-package consult-todo
+  :ensure t
+  :bind
+  (("<leader> st" . #'consult-todo)
+   ("<leader> sT" . #'consult-todo-dir)))
+
 (use-package transient
   :ensure t)
 
@@ -1091,5 +1115,3 @@ The DWIM behaviour of this command is as follows:
 
 (use-package lua-mode
   :ensure t)
-
-(use-package zig-mode :ensure t)
