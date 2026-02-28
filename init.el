@@ -1090,22 +1090,18 @@ signature  = %s
     (let* ((buffer (current-buffer))
            (filename (buffer-file-name buffer))
            (directory (directory-file-name (file-name-directory filename)))
-           (odinfmt-cmd (format "%s -path:%s -w -file" "odinfmt" filename)) ;; TODO: accept optional arg for `odinfmt' path
-           )
+           ;; TODO: accept optional arg for `odinfmt' path
+           (odinfmt-cmd (format "%s -path:%s -w" "odinfmt" filename)))
       (progn
         (shell-command odinfmt-cmd buffer)
-        (revert-buffer :noconfirm t))
-        (message (concat "Formatting: " (file-name-nondirectory filename))))))
+        (revert-buffer :noconfirm t)
+        (message (concat "Formatting: " (file-name-nondirectory filename)))))))
 
 (use-package odin-mode
   :ensure (:host github :repo "antonio-petrillo/odin-mode")
   :bind
   (:map odin-mode-map
-        ("<localleader> c" . #'odin-build-project)
-        ("<localleader> C" . #'odin-check-project)
-        ("<localleader> f" . #'nto--run-odinfmt)
-        ("<localleader> r" . #'odin-run-project)
-        ("<localleader> t" . #'odin-test-project)))
+        ("<localleader> f" . #'nto--run-odinfmt)))
 
 (use-package elixir-mode
   :ensure t
