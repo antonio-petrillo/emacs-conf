@@ -756,17 +756,7 @@ The DWIM behaviour of this command is as follows:
   :config
   (setq denote-directory (file-name-concat nto--notes-dir "notes")
         denote-assets-directory (file-name-concat nto--notes-dir "assets"))
-  (setq denote-toml-front-matter
-        "---
-title      = %s
-date       = %s
-tags       = %s
-identifier = %s
-signature  = %s
----
-
-")
-  (setq denote-file-type 'markdown-toml)
+  (setq denote-file-type 'org)
   (setq denote-infer-keywords t)
   (setq denote-sort-keywords t)
   (setq denote-buffer-name-prefix "[Note] ")
@@ -828,7 +818,9 @@ signature  = %s
   (org-edit-src-content-indentation 0)
   (org-export-with-toc t)
   (org-cycle-emulate-tab t)
-  (org-export-headline-levels 8))
+  (org-export-headline-levels 8)
+  :config
+  (plist-put org-format-latex-options :scale 2.0))
 
 (use-package org-modern
   :ensure t
