@@ -47,6 +47,8 @@
 	   (not (eq (pwd) "c:/Program Files/Emacs")))
   (cd (getenv "HOME")))
 
+(setq elpaca-queue-limit 30)
+
 (use-package exec-path-from-shell
   :if (eq system-type 'gnu/linux)
   :ensure t
@@ -745,14 +747,12 @@ The DWIM behaviour of this command is as follows:
    (dired-mode . denote-dired-mode)
    (markdown-mode . denote-dired-mode))
   :bind
-  (("<leader> n n" . #'denote)
-   ("<leader> n f" . #'denote-open-or-create)
-   ("<leader> n N" . #'denote-type)
-   ("<leader> n d" . #'denote-sort-dired)
-   ("<leader> n i" . #'denote-link)
-   ("<leader> n I" . #'denote-add-links)
-   ("<leader> n b" . #'denote-backlinks)
-   ("<leader> n r" . #'denote-rename-file-using-front-matter))
+  (("<leader> nn" . #'denote)
+   ("<leader> nN" . #'denote-type)
+   ("<leader> nd" . #'denote-sort-dired)
+   ("<leader> ni" . #'denote-link)
+   ("<leader> nb" . #'denote-backlinks)
+   ("<leader> nr" . #'denote-rename-file-using-front-matter))
   :config
   (setq denote-directory (file-name-concat nto--notes-dir "notes")
         denote-assets-directory (file-name-concat nto--notes-dir "assets"))
@@ -762,6 +762,33 @@ The DWIM behaviour of this command is as follows:
   (setq denote-buffer-name-prefix "[Note] ")
   (setq denote-rename-buffer-mode "%D")
   (denote-rename-buffer-mode 1))
+
+(use-package consult-denote
+  :ensure t
+  :bind
+  (("<leader> nf" . #'consult-denote-find)
+   ("<leader> ng" . #'consult-denote-grep))
+  :config
+  (consult-denote-mode 1))
+
+(use-package denote-sequence
+  :ensure t
+  :bind
+  (("<leader> nss" . #'denote-sequence)
+   ("<leader> nsf" . #'denote-sequence-find)
+   ("<leader> nsl" . #'denote-sequence-link)
+   ("<leader> nsd" . #'denote-sequence-dired)
+   ("<leader> nsr" . #'denote-sequence-reparent)
+   ("<leader> nsc" . #'denote-sequence-convert))
+  :config
+  (setq denote-sequence-scheme 'numeric))
+
+(use-package denote-markdown
+  :ensure t
+  :commands ( denote-markdown-convert-links-to-file-paths
+              denote-markdown-convert-links-to-denote-type
+              denote-markdown-convert-links-to-obsidian-type
+              denote-markdown-convert-obsidian-links-to-denote-type ))
 
 (use-package denote-journal
   :ensure t
