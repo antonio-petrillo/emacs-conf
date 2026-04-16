@@ -765,6 +765,7 @@ The DWIM behaviour of this command is as follows:
 
 (use-package consult-denote
   :ensure t
+  :after denote
   :bind
   (("<leader> nf" . #'consult-denote-find)
    ("<leader> ng" . #'consult-denote-grep))
@@ -773,6 +774,7 @@ The DWIM behaviour of this command is as follows:
 
 (use-package denote-sequence
   :ensure t
+  :after denote
   :bind
   (("<leader> nss" . #'denote-sequence)
    ("<leader> nsf" . #'denote-sequence-find)
@@ -785,13 +787,15 @@ The DWIM behaviour of this command is as follows:
 
 (use-package denote-markdown
   :ensure t
-  :commands ( denote-markdown-convert-links-to-file-paths
-              denote-markdown-convert-links-to-denote-type
-              denote-markdown-convert-links-to-obsidian-type
-              denote-markdown-convert-obsidian-links-to-denote-type ))
+  :after denote
+  :commands (denote-markdown-convert-links-to-file-paths
+             denote-markdown-convert-links-to-denote-type
+             denote-markdown-convert-links-to-obsidian-type
+             denote-markdown-convert-obsidian-links-to-denote-type))
 
 (use-package denote-journal
   :ensure t
+  :after denote
   :commands (denote-journal-new-entry
              denote-journal-new-or-existing-entry
              denote-journal-link-or-create-entry)
