@@ -730,10 +730,10 @@ The DWIM behaviour of this command is as follows:
         trash-sort-key '("Date deleted: " . t)
         trashed-date-format "%d-%m-%Y %H:%M:%S"))
 
-(use-package darkroom
+(use-package writeroom-mode
   :ensure t
   :bind
-  (("<leader> tw" . #'darkroom-tentative-mode)))
+  ("<leader> tw" . #'writeroom-mode))
 
 (use-package markdown-mode
   :ensure t
