@@ -733,7 +733,11 @@ The DWIM behaviour of this command is as follows:
 (use-package writeroom-mode
   :ensure t
   :bind
-  ("<leader> tw" . #'writeroom-mode))
+  (("<leader> tw" . #'writeroom-mode)
+   :map writeroom-mode-map
+   ("C-M-<" . #'writeroom-decrease-width)
+   ("C-M->" . #'writeroom-increase-width)
+   ("C-M-=" . #'writeroom-adjust-width)))
 
 (use-package markdown-mode
   :ensure t
@@ -937,14 +941,14 @@ The DWIM behaviour of this command is as follows:
   :config
   (aas-set-snippets 'markdown-mode
                     ";[" "[ ] "
-                    ";b" (nto--aas-expand-and-move "**** " 3)
-                    ";i" (nto--aas-expand-and-move "** " 2))
+                    ";b" (nto--aas-expand-and-move "****" 2)
+                    ";i" (nto--aas-expand-and-move "**" 1))
   (aas-set-snippets 'org-mode
                     ";[" "[ ] "
-                    ";b" (nto--aas-expand-and-move "** " 2)
-                    ";i" (nto--aas-expand-and-move "// " 2)
-                    ";;4" (nto--aas-expand-and-move "$$$$ " 3)
-                    ";4" (nto--aas-expand-and-move "$$ " 2)))
+                    ";b" (nto--aas-expand-and-move "**" 1)
+                    ";i" (nto--aas-expand-and-move "//" 1)
+                    ";;4" (nto--aas-expand-and-move "$$$$" 2)
+                    ";4" (nto--aas-expand-and-move "$$" 1)))
 
 (use-package rotate-text
   :ensure (:host github :repo "debug-ito/rotate-text.el")
