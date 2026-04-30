@@ -386,6 +386,8 @@ The DWIM behaviour of this command is as follows:
   ("<leader> is" . #'emoji-search)
   ("<leader> ir" . #'emoji-recent)
   ("<leader> iu" . #'insert-char)
+  ("<leader> fp" . (lambda () (interactive) (dired user-emacs-directory)))
+  ("<leader> fP" . (lambda () (interactive) (find-file nto--user-config)))
 
   (:map emacs-lisp-mode-map
         ("<localleader> e" . #'eval-defun)
