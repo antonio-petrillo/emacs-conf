@@ -1,3 +1,4 @@
 /eln-cache/
 flycheck*.el
 org-persist/
+tree-sitter/

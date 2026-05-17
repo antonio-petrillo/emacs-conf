@@ -882,6 +882,59 @@ The DWIM behaviour of this command is as follows:
                            #'org-appear-manual-stop nil t)))
    (org-mode . org-appear-mode)))
 
+(use-package auctex
+  :ensure t
+  :init
+  (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
+        TeX-source-correlate-start-server t)
+  :config
+  (setq TeX-auto-save t
+        TeX-parse-self t
+        reftex-plug-into-AUCTeX t)
+
+  (setq-default TeX-master nil)
+
+  (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
+  (add-hook 'LaTeX-mode-hook 'visual-line-mode)
+  (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+  (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+  (add-hook 'LaTeX-mode-hook 'turn-on-reftex))
+
+(use-package cdlatex
+  :ensure t
+  :after latex
+  :hook ((LaTeX-mode . cdlatex-mode)
+         (Latex-Mode . cdlatex-electricindex-mode))
+  :bind (:map cdlatex-mode-map
+              ("<tab>" . cdlatex-tab)))
+
+(use-package adaptive-wrap
+  :ensure t
+  :hook (Latex-Mode . adaptive-wrap-prefix-mode)
+  :init (setq-default adaptive-wrap-extra-indent 0))
+
+(defun nto--latex-live-preview ()
+  (interactive)
+  (auctex-cont-latexmk-mode)
+  (TeX-command-sequence t t))
+
+(use-package auctex-cont-latexmk
+  :ensure t)
+
+(use-package evil-tex
+  :ensure t
+  :hook (LaTeX-mode . evil-tex-mode))
+
+(use-package typst-ts-mode
+  :ensure (:type git :host codeberg :repo "meow_king/typst-ts-mode"))
+
+(use-package pdf-tools
+  :ensure t
+  :after latex
+  :config
+  (pdf-tools-install)
+  (add-hook 'pdf-view-mode-hook 'auto-revert-mode))
+
 (use-package avy
   :ensure t
   :after evil
@@ -1113,3 +1166,9 @@ The DWIM behaviour of this command is as follows:
 
 (use-package lua-mode
   :ensure t)
+
+(use-package eglot-lua
+  :ensure (:host github :repo "juergenhoetzel/eglot-lua")
+  :defer
+  :custom
+  (eglot-lua-server-install-dir (file-name-concat nto--cache "EmmyLua-LanguageServer")))
