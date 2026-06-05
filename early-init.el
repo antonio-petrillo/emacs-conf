@@ -17,11 +17,8 @@
 (setq eshell-directory-name (file-name-concat nto--cache "eshell")
       treesit-extra-load-path `(,(file-name-concat nto--cache "tree-sitter")))
 
-
-(when (fboundp 'native-comp-eln-load-path)
-  (setq native-comp-eln-load-path (file-name-concat nto--cache "eln-cache")))
-
-(startup-redirect-eln-cache (file-name-concat nto--cache "eln-cache"))
+(when (fboundp 'startup-redirect-eln-cache)
+  (startup-redirect-eln-cache (file-name-concat nto--cache "eln-cache")))
 
 (setq
  auto-revert-verbose nil
@@ -50,6 +47,7 @@
  make-backup-files nil
  mouse-wheel-scroll-amount '(2 ((shift) . hscroll)
                                (mouse-wheel-scroll-amount-horizontal 2))
+ multisession-directory (file-name-concat nto--cache "multisession")
  org-directory nto--notes-dir
  pixel-scroll-precision-mode t
  pixel-scroll-precision-use-momentum nil

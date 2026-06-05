@@ -1,4 +1,4 @@
-;;; init.el --- Initialization file for Emacs -*- lexical-binding: t; -*-
+;; init.el --- Initialization file for Emacs -*- lexical-binding: t; -*-
 ;;; Commentary: Emacs Startup File --- initialization for Emacs
 
 (defvar elpaca-installer-version 0.11)
@@ -1210,6 +1210,6 @@ The DWIM behaviour of this command is as follows:
 
 (use-package eglot-lua
   :ensure (:host github :repo "juergenhoetzel/eglot-lua")
-  :defer
+  :after eglot
   :custom
   (eglot-lua-server-install-dir (file-name-concat nto--cache "EmmyLua-LanguageServer")))
