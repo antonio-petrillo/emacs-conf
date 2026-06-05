@@ -66,6 +66,9 @@
  use-short-answers t
  warning-minimum-level :emergency)
 
+(set-language-environment "UTF-8")
+(prefer-coding-system 'utf-8)
+
 (setq-default indent-tabs-mode nil)
 
 (load custom-file :no-error-if-file-is-missing)

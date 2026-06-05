@@ -5,3 +5,6 @@ This config is just for me, but you may find something useful that I in my turn 
 * To try
 + [[https://github.com/larstvei/Focus][Focus]], dim surround text
 + [[https://github.com/brett-lempereur/consult-xref-stack][consult-xref-stack]], C-i, C-o of evil
+
+* To install
++ install treesitter for typst
