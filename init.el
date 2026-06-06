@@ -821,7 +821,7 @@ The DWIM behaviour of this command is as follows:
   :bind
   ("<leader> n." . #'consult-notes)
   :config
-  (setq consult-notes-file-dir-sources `(("Denote"  ?d  ,(denote-directory))))
+  ;; (setq consult-notes-file-dir-sources `(("Denote"  ?d  ,(denote-directory))))
   (when (locate-library "denote")
     (consult-notes-denote-mode))
   (setq consult-notes-denote-files-function (lambda () (denote-directory-files nil t t))))
