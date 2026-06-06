@@ -73,9 +73,9 @@
   :init
   (setq undo-tree-visualizer-timestamps t
         undo-tree-visualizer-diff t
-        undo-limit 800000                     
-        undo-strong-limit 12000000            
-        undo-outer-limit 120000000)           
+        undo-limit 800000
+        undo-strong-limit 12000000
+        undo-outer-limit 120000000)
   :config
   (setq undo-tree-history-directory-alist `(("." . ,(file-name-concat nto--cache ".cache" "undo")))))
 
@@ -96,9 +96,6 @@
         evil-want-fine-undo t
         evil-toggle-key (kbd "C-q C-q C-z"))
   :config
-  (keymap-unset evil-normal-state-map "C-." 'remove)
-  (keymap-unset evil-normal-state-map "M-." 'remove)
-
   (evil-set-leader nil (kbd "M-SPC"))
   (evil-set-leader 'normal (kbd "SPC"))
 
@@ -167,8 +164,7 @@
   :after evil
   :ensure t
   :config
-  (evil-collection-init
-   '(dired eww magit term wdired)))
+  (evil-collection-init))
 
 (use-package evil-terminal-cursor-changer
   :if (not (eq system-type 'windows-nt))
@@ -180,11 +176,11 @@
 (use-package evil-escape
   :ensure t
   :after evil
-  :init
-  (evil-escape-mode)
-  :config
-  (setq-default evil-escape-key-sequence "jk"
-                evil-escape-delay 0.2))
+  :hook (elpaca-after-init-hook . evil-escape-mode)
+  :custom
+  (evil-escape-key-sequence "jk")
+  (evil-escape-delay 0.2)
+  (evil-escape-excluded-states '(normal visual multiedit emacs motion)))
 
 (use-package evil-exchange
   :ensure t
@@ -245,7 +241,7 @@
   (evil-define-key 'normal 'global
     (kbd "M-a") #'evil-multiedit-match-symbol-and-next
     (kbd "M-A") #'evil-multiedit-match-symbol-and-prev)
-  
+
   (evil-define-key 'visual 'global
     (kbd "R") #'evil-multiedit-match-all
     (kbd "M-a") #'evil-multiedit-match-and-next
@@ -354,7 +350,6 @@ The DWIM behaviour of this command is as follows:
      "^\\*Async-native-compile-log\\*$"))
   (ibuffer-formats
    '((mark " " (name 60 -1 :left))))
-
   (repeat-on-final-keystroke t)
   (repeat-exit-timeout 3)
   (repeat-exit-key "<escape>")
@@ -364,6 +359,8 @@ The DWIM behaviour of this command is as follows:
   (add-hook 'ibuffer-mode-hook (lambda () (ibuffer-switch-to-saved-filter-groups "default")))
   (auto-revert-mode)
   (setq completions-highlight-face nil)
+
+  (load-theme 'modus-operandi)
 
   (global-set-key [remap backward-kill-word] #'nto--backward-kill-word)
   (global-set-key [remap keyboard-quit] #'nto--keyboard-quit-dwim)
@@ -393,7 +390,6 @@ The DWIM behaviour of this command is as follows:
         ("<localleader> e" . #'eval-defun)
         ("<localleader> b" . #'eval-buffer)
         ("<localleader> r" . #'eval-region)))
-
 
 (use-package eldoc
   :ensure nil
@@ -522,64 +518,6 @@ The DWIM behaviour of this command is as follows:
          ("C-x C-d" . #'consult-dir)
          ("C-x C-j" . #'consult-dir-jump-file))))
 
-(eval-when-compile
-  (defmacro nto--embark-ace-action (fn)
-    `(defun ,(intern (concat "nto--embark-ace-" (symbol-name fn))) ()
-       (interactive)
-       (with-demoted-errors "%s"
-         (require 'ace-window)
-         (let ((aw-dispatch-always t))
-           (aw-switch-to-window (aw-select nil))
-           (call-interactively (symbol-function ',fn))))))
-
-  (defmacro nto--embark-split-action (fn split-type)
-    `(defun ,(intern (concat "nto--embark-"
-                             (symbol-name fn)
-                             "-"
-                             (car (last (split-string
-                                         (symbol-name split-type) "-"))))) ()
-       (interactive)
-       (funcall #',split-type)
-       (call-interactively #',fn)))
-
-  (nto--embark-ace-action find-file)
-  (nto--embark-ace-action switch-to-buffer)
-
-  (nto--embark-split-action find-file split-window-below)
-  (nto--embark-split-action find-file split-window-right)
-
-  (nto--embark-split-action switch-to-buffer split-window-below)
-  (nto--embark-split-action switch-to-buffer split-window-right))
-
-
-(use-package embark
-  :ensure t
-  :bind
-  (("C-c C-a" . #'embark-act)
-   ("C-." . #'embark-act)
-   ("C-," . #'embark-dwim)
-   ("<leader> hE" . #'embark-bindings)
-   (:map embark-file-map
-         ("w" . #'nto--embark-ace-find-file)
-         ("2" . #'nto--embark-find-file-below)
-         ("3" . #'nto--embark-find-file-right))
-   (:map embark-buffer-map
-         ("w" . #'nto--embark-ace-switch-to-buffer)
-         ("2" . #'nto--embark-switch-to-buffer-below)
-         ("3" . #'nto--embark-switch-to-buffer-right))
-   (:map minibuffer-local-map
-         ("C-c C-c" . #'embark-collect)
-         ("C-c C-e" . #'embark-export)
-         ("C-c C-b" . #'embark-become)))
-  :init
-  (setq prefix-help-command #'embark-prefix-help-command))
-
-(use-package embark-consult
-  :ensure t
-  :after (embark consult)
-  :demand t
-  :hook (embark-collect-mode . consult-preview-at-point-mode))
-
 (defun nto--take-me-home ()
   (interactive)
   (if (looking-back "/" nil)
@@ -634,9 +572,9 @@ The DWIM behaviour of this command is as follows:
   (global-corfu-mode)
 
   :custom
-  (corfu-auto t) 
+  (corfu-auto t)
   (corfu-auto-prefix 1)
-  (corfu-cycle t) 
+  (corfu-cycle t)
   (corfu-cycle-preview-current nil)
   (corfu-min-width 20)
   (corfu-popupinfo-delay 0.5)
@@ -695,11 +633,13 @@ The DWIM behaviour of this command is as follows:
 (use-package dired
   :ensure nil
   :after evil
-  :commands (dired)
+  :commands (dired dired-jump)
   :custom
+  (dired-auto-revert-buffer #'dired-buffer-stale-p)
   (dired-listing-switches "-aghi -v")
   (dired-recursive-copies 'always)
-  (dired-recursive-deletes 'alwasy)
+  (dired-recursive-deletes 'top)
+  (dired-create-destination-dirs 'ask)
   (dired-mouse-drag-files t)
   (dired-make-directory-clickable t)
   (dired-dwim-target t)
@@ -725,7 +665,6 @@ The DWIM behaviour of this command is as follows:
 (use-package trashed
   :ensure t
   :commands (trashed)
-  :bind ("<leader> C-," . #'trashed)
   :config
   (setq trashed-action-confirmer 'y-or-n-p
         trashed-use-header-line t
@@ -748,20 +687,24 @@ The DWIM behaviour of this command is as follows:
 
 (use-package denote
   :ensure t
+  :commands (denote-directory)
   :hook
   ((text-mode . denote-fontify-links-mode-maybe)
-   (dired-mode . denote-dired-mode)
-   (markdown-mode . denote-dired-mode))
+   (dired-mode . denote-dired-mode))
   :bind
   (("<leader> nn" . #'denote)
    ("<leader> nN" . #'denote-type)
-   ("<leader> nd" . #'denote-sort-dired)
+   ("<leader> nd" . #'nto--denote-dired)
    ("<leader> ni" . #'denote-link)
    ("<leader> nb" . #'denote-backlinks)
    ("<leader> nr" . #'denote-rename-file-using-front-matter))
+  :init
+  (defun nto--denote-dired ()
+    (interactive)
+    (dired (denote-directory)))
   :config
-  (setq denote-directory (file-name-concat nto--notes-dir "notes")
-        denote-assets-directory (file-name-concat nto--notes-dir "assets"))
+  (defvar denote-assets-directory (file-name-concat nto--notes-dir "assets"))
+  (setq denote-directory nto--notes-dir)
   (setq denote-file-type 'org)
   (setq denote-infer-keywords t)
   (setq denote-sort-keywords t)
@@ -770,30 +713,6 @@ The DWIM behaviour of this command is as follows:
   (denote-rename-buffer-mode 1))
 
 (with-eval-after-load 'denote
-  (add-to-list 'denote-file-types
-               '(typst
-                 :extension ".typ"
-                 :front-matter nto--denote-typst-front-matter ;; TODO
-                 :title-key-regexp "^\\stitle\\s-*:" ;; TODO
-                 :title-value-function nto--denote-format-string-for-org-front-matter
-                 :title-value-reverse-function nto--denote-trim-whitespace
-
-                 :keywords-key-regexp "^#\\s-+keywords:"
-                 :keywords-value-function nto--denote-format-keywords-for-typst-front-matter
-                 :keywords-value-reverse-function nto--denote-extract-keywords-from-front-matter
-
-                 :identifier-key-regexp "^#\\s-+description:"
-                 :identifier-value-function nto--denote-format-string-for-org-front-matter
-                 :identifier-value-reverse-function nto--denote-trim-whitespace
-
-                 :date-key-regexp "^\\s-+datetime("
-                 :date-value-function nto--denote-typst-datetime
-                 :date-value-reverse-function nto--denote-extract-date-from-front-matter-typst
-
-                 :link-retrieval-format "#link(denote:%VALUE%)"
-                 :link nto--denote-typst-link-format
-                 :link-in-context-regexp nto--denote-typst-link-in-context-regexp))
-
   (defun nto--denote-format-string-for-org-front-matter (s)
     (format "%S" s))
 
@@ -851,7 +770,32 @@ The DWIM behaviour of this command is as follows:
                    (match-string 1 date-string)
                    (match-string 4 date-string)
                    (match-string 5 date-string)
-                   (match-string 6 date-string))))))))
+                   (match-string 6 date-string)))))))
+
+  ;; NOTE: signature is not supported
+  (add-to-list 'denote-file-types
+               '(typst
+                 :extension ".typ"
+                 :front-matter nto--denote-typst-front-matter
+                 :title-key-regexp "^\\stitle\\s-*:"
+                 :title-value-function nto--denote-format-string-for-org-front-matter
+                 :title-value-reverse-function nto--denote-trim-whitespace
+
+                 :keywords-key-regexp "^#\\s-+keywords:"
+                 :keywords-value-function nto--denote-format-keywords-for-typst-front-matter
+                 :keywords-value-reverse-function nto--denote-extract-keywords-from-front-matter
+
+                 :identifier-key-regexp "^#\\s-+description:"
+                 :identifier-value-function nto--denote-format-string-for-org-front-matter
+                 :identifier-value-reverse-function nto--denote-trim-whitespace
+
+                 :date-key-regexp "^\\s-+datetime("
+                 :date-value-function nto--denote-typst-datetime
+                 :date-value-reverse-function nto--denote-extract-date-from-front-matter-typst
+
+                 :link-retrieval-format "#link(denote:%VALUE%)"
+                 :link nto--denote-typst-link-format
+                 :link-in-context-regexp nto--denote-typst-link-in-context-regexp)))
 
 (use-package consult-denote
   :ensure t
@@ -862,19 +806,6 @@ The DWIM behaviour of this command is as follows:
   :config
   (consult-denote-mode 1))
 
-(use-package denote-sequence
-  :ensure t
-  :after denote
-  :bind
-  (("<leader> nss" . #'denote-sequence)
-   ("<leader> nsf" . #'denote-sequence-find)
-   ("<leader> nsl" . #'denote-sequence-link)
-   ("<leader> nsd" . #'denote-sequence-dired)
-   ("<leader> nsr" . #'denote-sequence-reparent)
-   ("<leader> nsc" . #'denote-sequence-convert))
-  :config
-  (setq denote-sequence-scheme 'numeric))
-
 (use-package denote-markdown
   :ensure t
   :after denote
@@ -883,20 +814,17 @@ The DWIM behaviour of this command is as follows:
              denote-markdown-convert-links-to-obsidian-type
              denote-markdown-convert-obsidian-links-to-denote-type))
 
-(use-package denote-journal
-  :ensure t
-  :after denote
-  :commands (denote-journal-new-entry
-             denote-journal-new-or-existing-entry
-             denote-journal-link-or-create-entry)
-  :hook (calendar-mode . denote-journal-calendar-mode)
+(use-package consult-notes
+  :ensure (:type git :host codeberg :repo "mclear-tools/consult-notes")
+  :commands (consult-notes
+             consult-notes-search-in-all-notes)
   :bind
-  (("<leader> n j" . #'denote-journal-new-or-existing-entry)
-   ("<leader> n J" . #'denote-journal-link-or-create-entry))
+  ("<leader> n." . #'consult-notes)
   :config
-  (setq denote-journal-directory (expand-file-name "journal" denote-directory)
-        denote-journal-keyword "journal"
-        denote-journal-title-format 'day-date-month-year))
+  (setq consult-notes-file-dir-sources `(("Denote"  ?d  ,(denote-directory))))
+  (when (locate-library "denote")
+    (consult-notes-denote-mode))
+  (setq consult-notes-denote-files-function (lambda () (denote-directory-files nil t t))))
 
 ;; I love org-mode but it bind to much stuff
 (use-package org
@@ -958,7 +886,7 @@ The DWIM behaviour of this command is as follows:
 (use-package org-appear
   :ensure t
   :defer t
-  :hook  
+  :hook
   ((org-mode . (lambda ()
                  (add-hook 'evil-insert-state-entry-hook
                            #'org-appear-manual-start nil t)
@@ -1158,8 +1086,8 @@ The DWIM behaviour of this command is as follows:
   :bind
   (([remap ispell-word] . #'jinx-correct)
    ("<leader> lc" . #'jinx-correct))
-  :config
-  (setopt jinx-languages "en_US,it_IT"))
+  :custom
+  (jinx-languages "en_US,it_IT"))
 
 (use-package google-translate
   :ensure t
@@ -1217,11 +1145,16 @@ The DWIM behaviour of this command is as follows:
 
 (use-package hl-todo
   :ensure t
-  :init
-  (keymap-set hl-todo-mode-map "C-c t p" #'hl-todo-previous)
-  (keymap-set hl-todo-mode-map "C-c t n" #'hl-todo-next)
-  (keymap-set hl-todo-mode-map "C-c t o" #'hl-todo-occur)
-  (keymap-set hl-todo-mode-map "C-c t i" #'hl-todo-insert))
+  :config
+  (add-hook 'markdown-mode-hook #'hl-todo-mode)
+  (add-hook 'org-mode-hook #'hl-todo-mode)
+  (add-hook 'prog-mode-hook #'hl-todo-mode)
+  :bind
+  (:map hl-todo-mode-map
+        ("C-c t p" . #'hl-todo-previous)
+        ("C-c t n" . #'hl-todo-next)
+        ("C-c t o" . #'hl-todo-occur)
+        ("C-c t i" . #'hl-todo-inser)))
 
 (use-package consult-todo
   :ensure t
