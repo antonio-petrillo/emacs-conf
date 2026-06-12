@@ -328,10 +328,12 @@ The DWIM behaviour of this command is as follows:
    (t
     (keyboard-quit))))
 
+
 (use-package emacs
   :ensure nil
   :after evil
   :custom
+  (mode-line-format (delq 'mode-line-modes mode-line-format))
   (ibuffer-expert t)
   (ibuffer-saved-filter-groups
    '(("default"
