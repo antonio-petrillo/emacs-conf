@@ -164,7 +164,7 @@
   :after evil
   :ensure t
   :config
-  (evil-collection-init))
+  (evil-collection-init '(calendar magit dired calc ediff)))
 
 (use-package evil-terminal-cursor-changer
   :if (not (eq system-type 'windows-nt))
@@ -719,8 +719,8 @@ The DWIM behaviour of this command is as follows:
     (format "%S" s))
 
   (defun nto--denote-trim-whitespace-and-double-quote (s)
-    (let ((s (denote-trim-whitespace s))
-          (string-trim s "\"" "\""))))
+    (let ((s (denote-trim-whitespace s)))
+          (string-trim s "\"" "\"")))
 
   (defvar nto--denote-typst-front-matter
     "#set document(
