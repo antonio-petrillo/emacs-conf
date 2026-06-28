@@ -19,6 +19,7 @@
    ("<localleader> t" . #'org-agenda-todo)
    ("<localleader> f" . #'org-footnote-new))
   :custom
+  (org-directory nto--org-directory)
   (org-agenda-files (directory-files-recursively org-directory ".*journal.*\\.org$"))
   (org-agenda-span 'week)
   (org-agenda-start-on-weekday 1)

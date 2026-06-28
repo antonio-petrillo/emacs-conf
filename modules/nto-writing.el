@@ -1,13 +1,14 @@
 ;; nto-writing.el -*- lexical-binding: t; -*-
 
-(use-package writeroom-mode
+(use-package olivetti
   :ensure t
   :bind
-  (("<leader> tw" . #'writeroom-mode)
-   :map writeroom-mode-map
-   ("C-M-<" . #'writeroom-decrease-width)
-   ("C-M->" . #'writeroom-increase-width)
-   ("C-M-=" . #'writeroom-adjust-width)))
+  (("<leader> tw" . #'olivetti-mode)
+   :map olivetti-mode-map
+   ("C-c [" . #'olivetti-shrink)
+   ("C-c ]" . #'olivetti-expand)
+   ("C-c \\" . #'olivetti-set-width)
+   ("C-c |" . #'olivetti-set-width)))
 
 (use-package rotate-text
   :ensure (:host github :repo "debug-ito/rotate-text.el")

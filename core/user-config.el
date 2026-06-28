@@ -1,8 +1,5 @@
 ;; user-config.el -*- lexical-binding: t; -*-
 
-(defvar nto--user-config
-  (file-name-concat (getenv "HOME") ".local" "emacs" "user-config.el"))
-
 (defun load-user-config ()
   "Load the user config located at `nto--user-config' var."
   (load nto--user-config))

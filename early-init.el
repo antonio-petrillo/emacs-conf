@@ -5,9 +5,6 @@
 ;;
 ;;; Code:
 
-(defvar nto--notes-dir
-  (file-name-concat (getenv "HOME") "Documents" "Notes"))
-
 (defvar nto--cache
   (file-name-concat (getenv "HOME") ".local" "emacs"))
 
@@ -48,7 +45,6 @@
  mouse-wheel-scroll-amount '(2 ((shift) . hscroll)
                                (mouse-wheel-scroll-amount-horizontal 2))
  multisession-directory (file-name-concat nto--cache "multisession")
- org-directory nto--notes-dir
  pixel-scroll-precision-mode t
  pixel-scroll-precision-use-momentum nil
  read-answer-short t
