@@ -1,5 +1,8 @@
 ;; nto-variables-definition.el -*- lexical-binding: t; -*-
 
+(setq user-mail-address "antonio.petrillo4@studenti.unina.it"
+      user-full-name "Antonio Petrillo")
+
 (defvar nto--user-config
   (file-name-concat (getenv "HOME") ".local" "emacs" "user-config.el"))
 

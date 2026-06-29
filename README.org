@@ -2,9 +2,8 @@
 
 This config is just for me, but you may find something useful that I in my turn I copied from someone else.
 
-* To try
-+ [[https://github.com/larstvei/Focus][Focus]], dim surround text
+* To setup
 + [[https://github.com/brett-lempereur/consult-xref-stack][consult-xref-stack]], C-i, C-o of evil
++ [[https://notmuchmail.org/][notmuch]] for email
+  
 
-* To install
-+ install treesitter for typst
