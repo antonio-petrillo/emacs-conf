@@ -1,8 +1,5 @@
 ;; nto-notes.el -*- lexical-binding: t; -*-
 
-(defvar nto--notes-map
-  (make-sparse-keymap "notes"))
-
 (use-package denote
   :ensure t
   :commands (denote-directory)
@@ -13,7 +10,7 @@
   (("<leader> na" . #'nto--intern-assets)
    ("<leader> nr" . #'denote-rename-file-using-front-matter)
    ("<leader> nu" . #'nto--unsorted-note))
-  :preface
+  :config
   (defun nto--unsorted-note ()
     (interactive)
     (let* ((title (denote-title-prompt nil))
@@ -55,7 +52,6 @@
           (nto--dired-intern-assets-internal filename move-if-non-nil)
         (user-error "The file to intern into notes asset must be a regular file"))))
 
-  :config
   (setq denote-directory nto--notes-dir)
   (setq denote-file-type 'org)
   (setq denote-infer-keywords t)
@@ -72,6 +68,7 @@
   :bind
   (("<leader> nl" . #'org-roam-buffer-toggle))
   :config
+  (keymap-set nto--notes-map "l" #'org-roam-buffer-toggle)
   (org-roam-db-autosync-mode 1))
 
 (use-package websocket
