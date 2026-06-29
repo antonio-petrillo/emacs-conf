@@ -1,5 +1,8 @@
 ;; nto-notes.el -*- lexical-binding: t; -*-
 
+(defvar nto--notes-map
+  (make-sparse-keymap "notes"))
+
 (use-package denote
   :ensure t
   :commands (denote-directory)
@@ -7,17 +10,50 @@
   ((text-mode . denote-fontify-links-mode-maybe)
    (dired-mode . denote-dired-mode))
   :bind
-  (("<leader> nr" . #'denote-rename-file-using-front-matter)
+  (("<leader> na" . #'nto--intern-assets)
+   ("<leader> nr" . #'denote-rename-file-using-front-matter)
    ("<leader> nu" . #'nto--unsorted-note))
   :preface
   (defun nto--unsorted-note ()
     (interactive)
     (let* ((title (denote-title-prompt nil))
            (keywords (denote-keywords-prompt))
-           (extension (format ".%s" (completing-read "Extension: " '("typ" "tex" "org" "md" "txt"))))
+           (extension (concat "." (completing-read "Extension: " '("typ" "tex" "org" "md" "txt"))))
            (id (format-time-string denote-date-identifier-format))
-           (filename (denote-format-file-name nto--notes-unsorted-dir id keywords title extension "")))
+           (filename (denote-format-file-name nto--notes-unsorted-dir id keywords title (if (string= extension ".")) "")))
       (find-file filename)))
+
+  (defun nto--dired-intern-assets-internal (old-path move-if-non-nil)
+    (let* ((filename (file-name-nondirectory old-path))
+           (extension (file-name-extension filename t))
+
+           (title (denote-title-prompt nil))
+           (keywords (denote-keywords-prompt))
+           (id (format-time-string denote-date-identifier-format))
+
+           (new-path (denote-format-file-name
+                      nto--notes-assets-dir
+                      id keywords title extension "")))
+
+      (when (or (not old-path) (not (file-regular-p old-path)))
+        (user-error "The file to intern into notes asset must be a regular file"))
+
+      (if move-if-non-nil
+          (dired-rename-file old-path new-path nil)
+        (dired-copy-file old-path new-path nil))
+      (message (format "%s: %s to %s" (if move-if-non-nil "Moved" "Copied") old-path new-path))))
+
+  (defun nto--dired-intern-assets (&optional move-if-non-nil)
+    (interactive "P")
+    (let ((old-path (dired-get-file-for-visit))
+          (nto--dired-intern-assets-internal old-path move-if-non-nil))))
+
+  (defun nto--intern-assets (&optional move-if-non-nil)
+    (interactive "P")
+    (let ((filename (read-file-name "Select: ")))
+      (if (and filename (file-regular-p filename))
+          (nto--dired-intern-assets-internal filename move-if-non-nil)
+        (user-error "The file to intern into notes asset must be a regular file"))))
 
   :config
   (setq denote-directory nto--notes-dir)
@@ -58,8 +94,8 @@
 (use-package denote-roam
   :ensure (:type git :host github :repo "BardofSprites/denote-roam")
   :bind
-  ("<leader> nn" . #'denote-roam-find-or-create-node)
-  ("<leader> ni" . #'denote-roam-insert-or-create-node)
+  (("<leader> nn" . #'denote-roam-find-or-create-node)
+   ("<leader> ni" . #'denote-roam-insert-or-create-node))
   :custom
   (denote-roam-include-journal nil)
   (denote-roam-directory nto--notes-dir)

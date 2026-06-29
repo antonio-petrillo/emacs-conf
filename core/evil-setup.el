@@ -22,8 +22,8 @@
   :init
   (setq evil-undo-system 'undo-tree
         evil-want-C-i-jumpt t
-        evil-want-C-u-scroll t
-        evil-want-C-d-scroll t
+        evil-want-C-u-scroll nil
+        evil-want-C-d-scroll nil
 	evil-want-keybinding nil
         evil-want-Y-yank-to-eol t
         evil-split-window-below t

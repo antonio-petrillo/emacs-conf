@@ -16,6 +16,6 @@
   nto--notes-unsorted-dir)
 
 (defvar nto--notes-assets-dir
-  (expand-file-name "assets" nto--notes-dir-parent))
+  (expand-file-name "assets/" nto--notes-dir-parent))
 
 (provide 'nto-variables-definition)
