@@ -35,11 +35,11 @@ The DWIM behaviour of this command is as follows:
   (cond
    ((region-active-p)
     (keyboard-quit))
-   ((not (= 'normal evil-state)) (evil-normal-state))
-   ((derived-mode-p 'completion-list-mode)
-    (delete-completion-window))
    ((> (minibuffer-depth) 0)
     (abort-recursive-edit))
+   ((derived-mode-p 'completion-list-mode)
+    (delete-completion-window))
+   ((not (eq 'normal evil-state)) (evil-normal-state))
    (t
     (keyboard-quit))))
 
@@ -48,6 +48,7 @@ The DWIM behaviour of this command is as follows:
   :ensure nil
   :after evil
   :custom
+  (kill-do-not-save-duplicates t)
   (text-mode-ispell-word-completion nil)
   (read-extended-command-predicate #'command-completion-default-include-p)
   (mode-line-format (delq 'mode-line-modes mode-line-format))

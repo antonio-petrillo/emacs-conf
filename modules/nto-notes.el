@@ -20,7 +20,7 @@
            (filename (denote-format-file-name nto--notes-unsorted-dir id keywords title (if (string= extension ".")) "")))
       (find-file filename)))
 
-  (defun nto--dired-intern-assets-internal (old-path move-if-non-nil)
+  (defun nto--dired-intern-assets-internal (old-path move-if-non-nil out-dir)
     (let* ((filename (file-name-nondirectory old-path))
            (extension (file-name-extension filename t))
 

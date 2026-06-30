@@ -1,5 +1,14 @@
 ;; nto-writing.el -*- lexical-binding: t; -*-
 
+(use-package expand-region
+  :ensure t
+  :bind
+  (("C-=" . #'er/expand-region)))
+
+;; Use only in case of trolling
+(use-package selectric-mode
+  :ensure t)
+
 (use-package olivetti
   :ensure t
   :bind

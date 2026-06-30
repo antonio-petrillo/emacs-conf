@@ -14,9 +14,11 @@
   (dired-make-directory-clickable t)
   (dired-dwim-target t)
   :bind
-  (:map dired-mode-map
-        ("SPC" . nil)) ;; free up space for <leader>
+  ((:map dired-mode-map
+         ("SPC" . nil))) ;; free up space for <leader>
+
   :config
+  (evil-set-initial-state 'dired-mode 'normal)
   (evil-define-key 'normal dired-mode-map
     (kbd "h") #'dired-up-directory
     (kbd "l") #'dired-find-file))
