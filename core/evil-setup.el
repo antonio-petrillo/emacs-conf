@@ -33,7 +33,10 @@
   :config
   (evil-set-leader nil (kbd "M-SPC"))
   (evil-set-leader 'normal (kbd "SPC"))
-
+  (evil-set-leader 'visual (kbd "SPC"))
+  (evil-set-leader 'replace (kbd "SPC"))
+  (evil-set-leader 'operator (kbd "SPC"))
+  (evil-set-leader 'motion (kbd "SPC"))
   (evil-set-leader nil (kbd "<leader> m") t)
 
   (evil-define-key '(normal visual operator replace motion) 'global
