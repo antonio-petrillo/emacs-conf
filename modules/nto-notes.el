@@ -21,8 +21,9 @@
            (filename (denote-format-file-name nto--notes-unsorted-dir id keywords title (if (string= extension ".")) "")))
       (find-file filename)))
 
-  (defun nto--dired-intern-assets-internal (old-path move-if-non-nil out-dir)
-    (let* ((filename (file-name-nondirectory old-path))
+  (defun nto--dired-rename-using-denote-filescheme (input-path output-path &optional move-if-non-nil)
+    (interactive)
+    (let* ((filename (file-name-nondirectory input-path))
            (extension (file-name-extension filename t))
 
            (title (denote-title-prompt nil))
@@ -30,27 +31,27 @@
            (id (format-time-string denote-date-identifier-format))
 
            (new-path (denote-format-file-name
-                      nto--notes-assets-dir
+                      output-path
                       id keywords title extension "")))
 
-      (when (or (not old-path) (not (file-regular-p old-path)))
+      (when (or (not input-path) (not (file-regular-p input-path)))
         (user-error "The file to intern into notes asset must be a regular file"))
 
       (if move-if-non-nil
-          (dired-rename-file old-path new-path nil)
-        (dired-copy-file old-path new-path nil))
-      (message (format "%s: %s to %s" (if move-if-non-nil "Moved" "Copied") old-path new-path))))
+          (dired-rename-file input-path new-path nil)
+        (dired-copy-file input-path new-path nil))
+      (message (format "%s: %s to %s" (if move-if-non-nil "Moved" "Copied") input-path new-path))))
 
   (defun nto--dired-intern-assets (&optional move-if-non-nil)
     (interactive "P")
-    (let ((old-path (dired-get-file-for-visit))
-          (nto--dired-intern-assets-internal old-path move-if-non-nil))))
+    (let ((input-path (dired-get-file-for-visit))
+          (nto--dired-rename-using-denote-filescheme input-path nto--notes-assets-dir move-if-non-nil))))
 
   (defun nto--intern-assets (&optional move-if-non-nil)
     (interactive "P")
     (let ((filename (read-file-name "Select: ")))
       (if (and filename (file-regular-p filename))
-          (nto--dired-intern-assets-internal filename move-if-non-nil)
+          (nto--dired-rename-using-denote-filescheme filename nto--notes-assets-dir move-if-non-nil)
         (user-error "The file to intern into notes asset must be a regular file"))))
 
   (setq denote-directory nto--notes-dir)
