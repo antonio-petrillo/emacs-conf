@@ -10,6 +10,7 @@
   (("<leader> na" . #'nto--intern-assets)
    ("<leader> nr" . #'denote-rename-file-using-front-matter)
    ("<leader> nu" . #'nto--unsorted-note))
+
   :config
   (defun nto--unsorted-note ()
     (interactive)
@@ -60,6 +61,14 @@
   (setq denote-rename-buffer-mode "%D")
   (denote-rename-buffer-mode 1))
 
+(use-package denote-journal
+    :ensure t
+    :bind
+    ("<leader> nj" . #'denote-journal-new-or-existing-entry)
+    :custom
+    (denote-journal-directory nto--journal-dir)
+    (denote-journal-keyword "journal"))
+
 (use-package org-roam
   :ensure t
   :custom
@@ -68,7 +77,6 @@
   :bind
   (("<leader> nl" . #'org-roam-buffer-toggle))
   :config
-  (keymap-set nto--notes-map "l" #'org-roam-buffer-toggle)
   (org-roam-db-autosync-mode 1))
 
 (use-package websocket
@@ -94,12 +102,13 @@
   (("<leader> nn" . #'denote-roam-find-or-create-node)
    ("<leader> ni" . #'denote-roam-insert-or-create-node))
   :custom
-  (denote-roam-include-journal nil)
+  (denote-roam-include-journal t)
   (denote-roam-directory nto--notes-dir)
   :config
   (add-hook 'denote-after-rename-file-hook
             (lambda () (when (buffer-file-name)
-                         (org-roam-db-update-file (buffer-file-name)))))
+                         (org-roam-db-update-file (buffer-file-name))
+                         (message (format "update roam id for %s" (buffer-file-name))))))
   (denote-roam-mode t))
 
 (provide 'nto-notes)

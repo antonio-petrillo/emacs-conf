@@ -48,6 +48,7 @@ The DWIM behaviour of this command is as follows:
   :ensure nil
   :after evil
   :custom
+  (system-time-locale "C")
   (kill-do-not-save-duplicates t)
   (text-mode-ispell-word-completion nil)
   (read-extended-command-predicate #'command-completion-default-include-p)

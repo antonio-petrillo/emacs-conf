@@ -12,8 +12,11 @@
 (defvar nto--notes-dir
   (expand-file-name "roam-denote-notes/" nto--notes-dir-parent))
 
+(defvar nto--journal-dir
+  (expand-file-name "journal/" nto--notes-dir-parent))
+
 (defvar nto--notes-unsorted-dir
-  (expand-file-name "notes/" nto--notes-dir-parent))
+  (expand-file-name "unsorted/" nto--notes-dir-parent))
 
 (defvar nto--org-directory
   nto--notes-unsorted-dir)
