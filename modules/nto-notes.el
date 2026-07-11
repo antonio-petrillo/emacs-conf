@@ -99,6 +99,7 @@
 
 (use-package denote-roam
   :ensure (:type git :host github :repo "BardofSprites/denote-roam")
+  :preface nto--notes-menu
   :bind
   (("<leader> nn" . #'denote-roam-find-or-create-node)
    ("<leader> ni" . #'denote-roam-insert-or-create-node))
@@ -111,5 +112,23 @@
                          (org-roam-db-update-file (buffer-file-name))
                          (message (format "update roam id for %s" (buffer-file-name))))))
   (denote-roam-mode t))
+
+(with-eval-after-load 'transient
+  (transient-define-prefix nto--notes-menu ()
+    [["Visit"
+      ("n" "Notes" (lambda () (interactive) (dired nto--notes-dir)))
+      ("a" "Assets" (lambda () (interactive) (dired nto--notes-assets-dir)))
+      ("j" "Journal" (lambda () (interactive) (dired nto--journal-dir)))
+      ("u" "Unsorted" (lambda () (interactive) (dired nto--notes-unsorted-dir)))]
+     ["Visualize"
+      ("g" "Open Graph" org-roam-ui-open)
+      ;; add denote journal visualization
+      ]])
+
+
+  (use-package emacs
+    :ensure nil
+    :bind
+    ("<leader> nm" . #'nto--notes-menu)))
 
 (provide 'nto-notes)

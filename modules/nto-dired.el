@@ -22,6 +22,21 @@
     (kbd "h") #'dired-up-directory
     (kbd "l") #'dired-find-file))
 
+(with-eval-after-load 'transient
+  (transient-define-prefix nto--dired-menu ()
+    [["Visit"
+      ("j" "Downloads" (lambda () (interactive) (dired "~/Downloads")))
+      ("d" "Documents" (lambda () (interactive) (dired "~/Documents/")))
+      ("i" "Images" (lambda () (interactive) (dired "~/Pictures/")))
+      ("v" "Videos" (lambda () (interactive) (dired "~/Videos/")))
+      ("p" "Projects" (lambda () (interactive) (dired "~/Projects/")))
+      ("c" "Config" (lambda () (interactive) (dired "~/.config/")))]])
+
+  (use-package emacs
+    :ensure nil
+    :bind
+    ("<leader> fm" . #'nto--dired-menu)))
+
 (use-package dired-x
   :ensure nil
   :after dired

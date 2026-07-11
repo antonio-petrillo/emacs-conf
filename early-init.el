@@ -27,7 +27,6 @@
  create-lockfiles nil
  custom-file (file-name-concat nto--cache "custom.el")
  custom-safe-theme t
- default-input-method "italian-postfix"
  delete-by-moving-to-trash t
  delete-selection-mode 1
  display-line-numbers-type 'relative
