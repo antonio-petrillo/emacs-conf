@@ -18,6 +18,7 @@
 (use-package nerd-icons-dired
   :ensure t
   :hook
-  (dired-mode . nerd-icons-dired-mode))
+  (dired-mode . nerd-icons-dired-mode)
+  (dired-omit-mode . nerd-icons-dired-mode))
 
 (provide 'nto-ui)

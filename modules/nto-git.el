@@ -31,4 +31,7 @@
   :ensure t
   :hook (prog-mode . git-gutter))
 
+(use-package git-modes
+  :ensure t)
+
 (provide 'nto-git)

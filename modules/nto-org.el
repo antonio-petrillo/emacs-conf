@@ -44,6 +44,7 @@
   (org-cycle-emulate-tab t)
   (org-export-headline-levels 8)
   :config
+  (add-hook 'org-mode-hook #'visual-line-mode)
   (plist-put org-format-latex-options :scale 2.0))
 
 (use-package org-modern
@@ -68,5 +69,13 @@
                  (add-hook 'evil-insert-state-exit-hook
                            #'org-appear-manual-stop nil t)))
    (org-mode . org-appear-mode)))
+
+(use-package evil-org
+  :ensure t
+  :after org
+  :hook (org-mode . (lambda () evil-org-mode))
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
 
 (provide 'nto-org)

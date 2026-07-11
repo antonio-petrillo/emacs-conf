@@ -2,6 +2,12 @@
 
 (add-to-list 'load-path (expand-file-name "modules/lang" user-emacs-directory))
 
+(add-hook 'java-mode-hook 'subword-mode)
+(add-hook 'prog-mode-hook (lambda ()
+                            (display-line-numbers-mode 1)
+			    (toggle-truncate-lines 1)
+                            (setq-local display-line-numbers 'relative)))
+
 (require 'nto-lua)
 (require 'nto-odin)
 (require 'nto-elixir)

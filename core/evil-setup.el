@@ -19,24 +19,20 @@
   :hook (elpaca-after-init-hook . evil-mode)
   :custom
   (evil-disable-insert-state-bindings t)
-  :init
-  (setq evil-undo-system 'undo-tree
-        evil-want-C-i-jumpt t
-        evil-want-C-u-scroll nil
-        evil-want-C-d-scroll nil
-	evil-want-keybinding nil
-        evil-want-Y-yank-to-eol t
-        evil-split-window-below t
-        evil-split-window-right t
-        evil-want-fine-undo t
-        evil-toggle-key (kbd "C-q C-q C-z"))
+  (evil-respect-visual-line-mode t)
+  (evil-undo-system 'undo-tree)
+  (evil-want-C-i-jumpt t)
+  (evil-want-C-u-scroll nil)
+  (evil-want-C-d-scroll nil)
+  (evil-want-keybinding nil)
+  (evil-want-Y-yank-to-eol t)
+  (evil-split-window-below t)
+  (evil-split-window-right t)
+  (evil-want-fine-undo t)
+  (evil-toggle-key (kbd "C-q C-q C-z"))
   :config
   (evil-set-leader nil (kbd "M-SPC"))
-  (evil-set-leader 'normal (kbd "SPC"))
-  (evil-set-leader 'visual (kbd "SPC"))
-  (evil-set-leader 'replace (kbd "SPC"))
-  (evil-set-leader 'operator (kbd "SPC"))
-  (evil-set-leader 'motion (kbd "SPC"))
+  (evil-set-leader '(normal visual replace operator motion) (kbd "SPC"))
   (evil-set-leader nil (kbd "<leader> m") t)
 
   (evil-define-key '(normal visual operator replace motion) 'global
@@ -213,13 +209,5 @@
   :config
   (evil-traces-use-diff-faces)
   (evil-traces-mode))
-
-(use-package evil-org
-  :ensure t
-  :after org
-  :hook (org-mode . (lambda () evil-org-mode))
-  :config
-  (require 'evil-org-agenda)
-  (evil-org-agenda-set-keys))
 
 (provide 'evil-setup)

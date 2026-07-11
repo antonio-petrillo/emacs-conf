@@ -9,19 +9,49 @@
   (dired-listing-switches "-aghi -v")
   (dired-recursive-copies 'always)
   (dired-recursive-deletes 'top)
-  (dired-create-destination-dirs 'ask)
   (dired-mouse-drag-files t)
   (dired-make-directory-clickable t)
+  (dired-kill-when-opening-new-dired-buffer t)
   (dired-dwim-target t)
   :bind
   ((:map dired-mode-map
-         ("SPC" . nil))) ;; free up space for <leader>
-
+         ("C-c C-e" . #'wdired-change-to-wdired-mode)))
   :config
-  (evil-set-initial-state 'dired-mode 'normal)
-  (evil-define-key 'normal dired-mode-map
+  (evil-set-initial-state 'dired-mode 'motion)
+  (evil-define-key 'motion dired-mode-map
     (kbd "h") #'dired-up-directory
     (kbd "l") #'dired-find-file))
+
+(use-package dired-x
+  :ensure nil
+  :after dired
+  :defer t
+  :hook (dired-mode . dired-omit-mode)
+  :bind
+  ((:map dired-mode-map
+         ("C-h" . #'dired-omit-mode)))
+  :config
+  ;; Taken from Doom Emacs
+  (setq dired-omit-verbose nil
+        dired-omit-files
+        (concat dired-omit-files
+                "\\|^\\..+$"
+                "\\|^\\.DS_Store\\'"
+                "\\|^flycheck_.*"
+                "\\|^\\.project\\(?:ile\\)?\\'"
+                "\\|^\\.ccls-cache\\'"
+                "\\|\\(?:\\.js\\)?\\.meta\\'"
+                "\\|\\.\\(?:elc\\|o\\|pyo\\|swp\\|class\\)\\'"))
+  (setq dired-clean-confirm-killing-deleted-buffers nil))
+
+(use-package dired-aux
+  :ensure nil
+  :after dired
+  :defer t
+  :custom
+  (dired-isearch-filenames 'dwim)
+  (dired-vc-rename-file t)
+  (dired-create-destination-dirs 'ask))
 
 (use-package dired-subtree
   :ensure t
@@ -33,5 +63,9 @@
         ("S-TAB" . #'dired-subtree-remove))
   :config
   (setq dired-subtree-use-backgrounds nil))
+
+(use-package diredfl
+  :ensure t
+  :hook (dired-mode . diredfl-mode))
 
 (provide 'nto-dired)
