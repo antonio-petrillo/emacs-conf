@@ -1,7 +1,9 @@
 ;; nto-git.el -*- lexical-binding: t; -*-
 
 (use-package transient
-  :ensure t)
+  :ensure t
+  :custom
+  (transient-history-file (file-name-concat nto--cache "transient")))
 
 (use-package magit
   :ensure t
