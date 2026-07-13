@@ -99,7 +99,6 @@
 
 (use-package denote-roam
   :ensure (:type git :host github :repo "BardofSprites/denote-roam")
-  :preface nto--notes-menu
   :bind
   (("<leader> nn" . #'denote-roam-find-or-create-node)
    ("<leader> ni" . #'denote-roam-insert-or-create-node))

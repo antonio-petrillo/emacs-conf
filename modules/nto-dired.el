@@ -19,6 +19,7 @@
   :config
   (evil-set-initial-state 'dired-mode 'motion)
   (evil-define-key 'motion dired-mode-map
+    (kbd "+") #'dired-create-directory
     (kbd "h") #'dired-up-directory
     (kbd "l") #'dired-find-file))
 

@@ -4,6 +4,7 @@
 (use-package org
   :ensure nil
   :defer t
+  :hook (org-mode . org-indent-mode)
   :bind
   (("<leader> oa" . #'org-agenda)
    :map org-mode-map
@@ -73,7 +74,7 @@
 (use-package evil-org
   :ensure t
   :after org
-  :hook (org-mode . (lambda () evil-org-mode))
+  :hook (org-mode . evil-org-mode)
   :config
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
