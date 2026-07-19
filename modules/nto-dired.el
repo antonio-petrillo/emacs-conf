@@ -84,4 +84,13 @@
   :ensure t
   :hook (dired-mode . diredfl-mode))
 
+(use-package trashed
+  :ensure t
+  :commands (trashed)
+  :config
+  (setq trashed-action-confirmer 'y-or-n-p
+        trashed-use-header-line t
+        trash-sort-key '("Date deleted: " . t)
+        trashed-date-format "%d-%m-%Y %H:%M:%S"))
+
 (provide 'nto-dired)

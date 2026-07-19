@@ -98,7 +98,7 @@
   :after evil
   :ensure t
   :config
-  (evil-collection-init '(calendar magit dired calc ediff)))
+  (evil-collection-init '(calendar magit dired calc ediff ibuffer)))
 
 (use-package evil-terminal-cursor-changer
   :if (not (eq system-type 'windows-nt))

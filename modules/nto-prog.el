@@ -43,13 +43,23 @@
   :ensure t
   :hook (prog-mode . rainbow-delimiters-mode))
 
-(use-package trashed
+(use-package ghostel
   :ensure t
-  :commands (trashed)
-  :config
-  (setq trashed-action-confirmer 'y-or-n-p
-        trashed-use-header-line t
-        trash-sort-key '("Date deleted: " . t)
-        trashed-date-format "%d-%m-%Y %H:%M:%S"))
+  :if (member sytem-type '(gnu/linux darwin))
+  :bind
+  (("<leader> ot" . #'ghostel)))
+
+(use-package ghostel-eshell
+  :ensure nil
+  :after ghostel
+  :hook (eshell-load . ghostel-eshell-visual-command-mode))
+(use-package ghostel-compile
+  :ensure nil
+  :after ghostel
+  :hook (after-init . ghostel-compile-global-mode))
+(use-package ghostel-comint
+  :ensure nil
+  :after ghostel
+  :hook (after-init . ghostel-comint-global-mode))
 
 (provide 'nto-prog)

@@ -12,4 +12,7 @@
   :config
   (setq buffer-to-pdf-directory (expand-file-name "~/Downloads/")))
 
+(use-package speed-type
+  :ensure t)
+
 (provide 'nto-app)

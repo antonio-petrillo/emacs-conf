@@ -94,4 +94,10 @@
         ("C-c t o" . #'hl-todo-occur)
         ("C-c t i" . #'hl-todo-inser)))
 
+(use-package focus
+  :ensure t
+  :hook ((org-mode . focus-mode)
+         (markdown-mode . focus-mode)
+         (text-mode . focus-mode)))
+
 (provide 'nto-writing)
